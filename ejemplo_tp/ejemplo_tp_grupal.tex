@@ -12,7 +12,7 @@
 \materia{Algoritmos y Estructuras de Datos (ex-algo2)}
 \grupo{Grupo --}
 
-\integrante{Chiquinho, Santiago}{490/23}{	santichiquinho@gmail.com}
+\integrante{Chiquinho, Santiago}{490/23}{santichiquinho@gmail.com}
 \integrante{Brucellaria, Tomas}{287/23}{tomasbrus54@gmail.com}
 \integrante{Caetano, Franco}{351/23}{francocaetano20@gmail.com}
 \integrante{Ferro, Manuel}{405/23}{manu.ferro.13@gmail.com}
@@ -44,8 +44,38 @@
 \pred{predSuelto}{parametros}{\paraTodo[unalinea]{variable}{tipo}{algo \implicaLuego expresion}}
 \pred{predSuelto}{parametros}{\existe[unalinea]{variable}{tipo}{algo \yLuego expresion}}
 
-\subsection{trayectoriaDeLosFrutosIndividualesALargoPlazo:}
-% Especificación del programa
+\subsection{Problema 2:}
+
+\begin{proc}{trayectoriaDeLosFrutosIndividualesALargoPlazo}
+	{\Inout trayectorias: \TLista{\TLista{\float}}, \In cooperan: \TLista{\bool}, \In apuestas: \TLista{\TLista{\float}},
+	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}{tipoRes}
+
+	\requiere{
+		(\longitud[trayectorias] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos]) \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
+		\paraTodo[unalinea]{i,j,k}{\ent}{
+			(0 <= i,j < \longitud[pagos] \yLuego 0 <= k < pagos[i]) \implicaLuego %defino bien los enteros para usarlos de índices
+
+			((\longitud[apuestas][i] = \longitud[pagos][i]) \yLuego %chequeo si ambas refieren al mismo grupo de posibles eventos
+
+			(\longitud[eventos][i] = \longitud[eventos][j]) \yLuego %chequeo que cada individuo haya vivido la misma cantidad de eventos
+
+			(pagos[i][k],apuestas[i][k] > 0) \yLuego %chequeo que todos los pagos sean positivos, igual que todas las apuestas
+
+			(\sum\limits_{n=0}^{k} [apuestas][i][n] = 1) \yLuego %chequeo que las apuestas sumadas sean el 100% de los recursos del individuo
+			 													 %(esto implica, por el punto anterior, que son todas menores a 1, que representa la totalidad del recurso del individuo)
+
+			(\longitud[trayectorias[i]] = 1) \yLuego (\cab[trayectorias[i]] > 0)) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
+			}} %convendría achicar el requiere con auxiliares, uno por cada linea
+ 
+	\asegura{\paraTodo[unalinea]{i}{\ent}{
+		(0 <= i < \longitud[eventos]) \implicaLuego %defino el índice
+		
+		 (\longitud[trayectorias[i]] = \longitud[eventos[i]]) \yLuego %chequeo que al final cada trayectoria mida tanto como tiempo haya transcurrido
+	}}%completar el asegura
+
+	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
+	\pred{pred1}{parametros}{expresion} 
+\end{proc}
 
 \subsection{trayectoriaExtra˜naEscalera:}
 % Especificación del programa
