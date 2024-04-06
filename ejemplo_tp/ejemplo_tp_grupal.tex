@@ -27,22 +27,16 @@
 \maketitle
 
 \section{Especificación}
-\subsection{redistribucionDeLosFrutos:}
 
-\begin{proc}{nombre}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
+\subsection{Problema 1:}
+
+\begin{proc}{redistribucionDeLosFrutos:}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
 	%    \modifica{parametro1, parametro2,..}
 	\requiere{expresionBooleana1}
 	\asegura{expresionBooleana2}
 	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
 	\pred{pred1}{parametros}{expresion} 
 \end{proc}
-
-\aux{auxiliarSuelto}{parametros}{tipoRes}{expresion}
-% \paraTodo{variable}{tipo}{expresion}
-% \existe{variable}{tipo}{expresion}
-% Pueden tener [unalinea] para que no se divida en varias lineas
-\pred{predSuelto}{parametros}{\paraTodo[unalinea]{variable}{tipo}{algo \implicaLuego expresion}}
-\pred{predSuelto}{parametros}{\existe[unalinea]{variable}{tipo}{algo \yLuego expresion}}
 
 \subsection{Problema 2:}
 
@@ -77,14 +71,44 @@
 	\pred{pred1}{parametros}{expresion} 
 \end{proc}
 
-\subsection{trayectoriaExtra˜naEscalera:}
-% Especificación del programa
+\subsection{Problema 3:}
 
-\subsection{individuoDecideSiCooperarONo:}
-% Especificación del programa
+\begin{proc}{trayectoriaExtra˜naEscalera:}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
 
-\subsection{individuoActualizaApuesta:}
-% Especificación del programa
+	\requiere{expresionBooleana1}
+	\asegura{expresionBooleana2}
+	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
+	\pred{pred1}{parametros}{expresion} 
+\end{proc}
+
+\subsection{Problema 4:}
+
+\begin{proc}{individuoDecideSiCooperarONo:}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
+
+	\requiere{expresionBooleana1}
+	\asegura{expresionBooleana2}
+	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
+	\pred{pred1}{parametros}{expresion} 
+\end{proc}
+
+\subsection{Problema 5:}
+
+\begin{proc}{individuoActualizaApuesta:}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
+
+	\requiere{expresionBooleana1}
+	\asegura{expresionBooleana2}
+	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
+	\pred{pred1}{parametros}{expresion} 
+\end{proc}
+
+\subsection{Auxiliares de Especificación:}
+
+\aux{auxiliarSuelto}{parametros}{tipoRes}{expresion}
+% \paraTodo{variable}{tipo}{expresion}
+% \existe{variable}{tipo}{expresion}
+% Pueden tener [unalinea] para que no se divida en varias lineas
+\pred{predSuelto}{parametros}{\paraTodo[unalinea]{variable}{tipo}{algo \implicaLuego expresion}}
+\pred{predSuelto}{parametros}{\existe[unalinea]{variable}{tipo}{algo \yLuego expresion}}
 
 \section{Demostraciones de correctitud}
 %demostrar que el programa frutoDelTrabajoPuramenteIndividual
