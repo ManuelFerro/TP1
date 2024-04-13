@@ -47,38 +47,38 @@
 	\requiere{
 		(\longitud[trayectorias] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos]) \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
 			\paraTodo[unalinea]{i,j,k}{\ent}{
-				((0 <= i,j < \longitud[pagos]) \yLuego (0 <= k < pagos[i])) \implicaLuego % "<=" se printea bien? preguntar
+				((0 $\leq$ i,j < \longitud[pagos]) \yLuego (0 \leq k $<$ pagos[i])) \implicaLuego % "<=" se printea bien? preguntar
 
 				((\longitud[apuestas][i] = \longitud[pagos][i]) \yLuego %chequeo si ambas refieren al mismo grupo de posibles eventos
 
 				(\longitud[eventos][i] = \longitud[eventos][j]) \yLuego %chequeo que cada individuo haya vivido la misma cantidad de eventos
 
-				(pagos[i][k],apuestas[i][k] > 0) \yLuego %chequeo que todos los pagos sean positivos, igual que todas las apuestas
+				(pagos[i][k],apuestas[i][k] $>$ 0) \yLuego %chequeo que todos los pagos sean positivos, igual que todas las apuestas
 
 				(\sum\limits_{n=0}^{k} [apuestas][i][n] = 1) \yLuego %chequeo que las apuestas sumadas sean el 100% de los recursos del individuo
 			 													 %(esto implica, por el punto anterior, que son todas menores a 1, que representa la totalidad del recurso del individuo)
 
-				(\longitud[trayectorias[i]] = 1) \yLuego (\cab[trayectorias[i]] > 0)) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
+				(\longitud[trayectorias[i]] = 1) \yLuego (\cab)[trayectorias[i]] $<$ 0) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
 			}} %convendría achicar el requiere con auxiliares, uno por cada linea
  
 	\asegura{
 		PagoApuestaCorrecto(trayectorias, apuestas, pagos, eventos) \yLuego
 		PagoPozoCorrecto(trayectorias, cooperan) \yLuego
 		\paraTodo[unalinea]{i}{\ent}{
-			(0 <= i < \longitud[eventos]) \implicaLuego (\longitud[trayectorias[i]] = \longitud[eventos[i]] + 1)
+			(0 $\leq$ i $<$ \longitud[eventos]) \implicaLuego (\longitud[trayectorias[i]] = \longitud[eventos[i]] + 1)
 		 	%chequeo que al final cada trayectoria mida 1 más que la lista de eventos
 		}}
 
 	\pred{PagoApuestaCorrecto}{trayectorias, apuestas, pagos, eventos}{
 
 		\paraTodo[unalinea]{i,j}{\ent}{
-			((0 <= i < \longitud[trayectorias]) \yLuego (1 <= j < \longitud[trayectorias[i]])) \implicaLuego %acomodo los índices
+			((0 $\leq$ i $<$ \longitud[trayectorias]) \yLuego (1 $\leq$ j < \longitud[trayectorias[i]])) \implicaLuego %acomodo los índices
 	 		(trayectorias[i][j] = trayectorias[i][j - 1]*apuestas[i][eventos[i][j - 1]]*pagos[i][eventos[i][j - 1]])
 	 	}}%chequeo que el recurso del i-esimo jugador a tiempo j sea su anterior multiplicado por la apuesta y el pago que correspondan
 
 	\pred{PagoPozoCorrecto}{trayectorias, cooperan}{
 
-		\paraTodo[unalinea]{i,j}{\ent}{ ((0 <= i < \longitud[trayectorias]) \yLuego (1 <= j < \longitud[trayectorias[i]])) \implicaLuego
+		\paraTodo[unalinea]{i,j}{\ent}{ ((0 $\leq$ i $<$ \longitud[trayectorias]) \yLuego (1 <= j < \longitud[trayectorias[i]])) \implicaLuego
 			\IfThenElse{cooperan[i] = True}
 				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i]}
 				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i] + trayectorias[i][j - 1]}
@@ -87,7 +87,7 @@
 	\aux{recursosATiempoJ}{trayectorias, j}{\TLista{\float}}{
 		
 	\paraTodo[unalinea]{i}{\ent}{
-		(0 <= i < \longitud[trayectorias]) \implicaLuego 
+		(0 $\leq$ i $<$ \longitud[trayectorias]) \implicaLuego 
 		(res[i] = trayectorias[i][j]) 
 	}}%arma una lista de los recursos de los jugadores a tiempo j
 
@@ -98,12 +98,10 @@
 
 \subsection{Problema 3:}
 
-\begin{proc}{trayectoriaExtra˜naEscalera:}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
+\begin{proc}{trayectoriaExtrañaEscalera:}{\In trayectoria : \TLista{\float}}{\bool}
 
-	\requiere{expresionBooleana1}
-	\asegura{expresionBooleana2}
-	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
-	\pred{pred1}{parametros}{expresion} 
+	\requiere{\longitud[trayectoria] $\geq$ 3}
+	\asegura{\res = \True \Iff (( \exists ! i \in[1,\longitud[trayectoria]-2]): (trayectoria[i] > trayectoria [i-1] \yLuego trayectoria [i] > trayectoria [i+1] ))}
 \end{proc}
 
 \subsection{Problema 4:}
