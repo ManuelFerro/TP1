@@ -45,62 +45,75 @@
 	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}{\TLista{\TLista{\float}}}
 
 	\requiere{
-		(\longitud[trayectorias] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos]) \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
-			\paraTodo[unalinea]{i,j,k}{\ent}{
-				((0 $\leq$ i,j < \longitud[pagos]) \yLuego (0 \leq k $<$ pagos[i])) \implicaLuego % "<=" se printea bien? preguntar
+		igualLongitud(trayectorias, apuestas, pagos, eventos) \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
 
-				((\longitud[apuestas][i] = \longitud[pagos][i]) \yLuego %chequeo si ambas refieren al mismo grupo de posibles eventos
+		mismosEventos(apuestas, pagos) \yLuego %chequeo si ambas refieren al mismo grupo de posibles eventos
 
-				(\longitud[eventos][i] = \longitud[eventos][j]) \yLuego %chequeo que cada individuo haya vivido la misma cantidad de eventos
+		igualCantidadDeEventosPorIndividuo(eventos) \yLuego %chequeo que cada individuo haya vivido la misma cantidad de eventos
 
-				(pagos[i][k],apuestas[i][k] $>$ 0) \yLuego %chequeo que todos los pagos sean positivos, igual que todas las apuestas
+		apuestasPositivas(apuestas) \yLuego %chequeo que todos los pagos sean positivos, igual que todas las apuestas
 
-				(\sum\limits_{n=0}^{k} [apuestas][i][n] = 1) \yLuego %chequeo que las apuestas sumadas sean el 100% de los recursos del individuo
-			 													 %(esto implica, por el punto anterior, que son todas menores a 1, que representa la totalidad del recurso del individuo)
+		todoelRecursofueApostado(apuestas) \yLuego %chequeo que las apuestas sumadas sean el 100% de los recursos del individuo
 
-				(\longitud[trayectorias[i]] = 1) \yLuego (\cab)[trayectorias[i]] $<$ 0) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
-			}} %convendría achicar el requiere con auxiliares, uno por cada linea
+		(\longitud[trayectorias[i]] = 1) \yLuego ((\cab)[trayectorias[i]] $<$ 0) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
+		}
  
 	\asegura{
 		PagoApuestaCorrecto(trayectorias, apuestas, pagos, eventos) \yLuego
 		PagoPozoCorrecto(trayectorias, cooperan) \yLuego
 		\paraTodo[unalinea]{i}{\ent}{
-			(0 $\leq$ i $<$ \longitud[eventos]) \implicaLuego (\longitud[trayectorias[i]] = \longitud[eventos[i]] + 1)
+			0 $\leq$ i $<$ \longitud[eventos] \implicaLuego \longitud[trayectorias[i]] = \longitud[eventos[i]] + 1
 		 	%chequeo que al final cada trayectoria mida 1 más que la lista de eventos
 		}}
 
-	\pred{PagoApuestaCorrecto}{trayectorias, apuestas, pagos, eventos}{
-
-		\paraTodo[unalinea]{i,j}{\ent}{
-			((0 $\leq$ i $<$ \longitud[trayectorias]) \yLuego (1 $\leq$ j < \longitud[trayectorias[i]])) \implicaLuego %acomodo los índices
+	\pred{igualLongitud}{trayectorias, cooperan, apuestas, pagos, eventos}
+	{\longitud[trayectorias] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos]
+	}
+	\pred{mismosEventos}{apuestas, pagos}
+	{\paraTodo[unalinea]{i}{\ent}{
+		0 $\leq$ i $<$ \longitud[pagos] \implicaLuego \longitud[apuestas][i] = \longitud[pagos][i]}
+	}
+	\pred{igualCantidadDeEventosPorIndividuo}{eventos}
+	{\paraTodo[unalinea]{i,j}{\ent}{
+		0 $\leq$ i,j $<$ \longitud[eventos] \implicaLuego \longitud[eventos][i] = \longitud[eventos][j]}
+	}
+	\pred{apuestasPositivas}{apuestas}
+	{\paraTodo[unalinea]{i,j}{\ent}{
+		(0 $\leq$ i $<$ \longitud[apuestas] \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego apuestas[i][j] $>$ 0}
+	}
+	\aux{todoelRecursofueApostado}{apuestas}{\ent}
+	{\paraTodo[unalinea]{i,j}{\ent}{
+		(0 $\leq$ i $<$ \longitud[apuestas] \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego (\sum\limits_{n=0}^{j} [apuestas][i][n])}
+	}
+	
+	\pred{PagoApuestaCorrecto}{trayectorias, apuestas, pagos, eventos}
+		{\paraTodo[unalinea]{i,j}{\ent}{
+			((0 $\leq$ i $<$ \longitud[trayectorias]) \yLuego (1 $\leq$ j $<$ \longitud[trayectorias[i]])) \implicaLuego %acomodo los índices
 	 		(trayectorias[i][j] = trayectorias[i][j - 1]*apuestas[i][eventos[i][j - 1]]*pagos[i][eventos[i][j - 1]])
-	 	}}%chequeo que el recurso del i-esimo jugador a tiempo j sea su anterior multiplicado por la apuesta y el pago que correspondan
+	 	}
+		}%chequeo que el recurso del i-esimo jugador a tiempo j sea su anterior multiplicado por la apuesta y el pago que correspondan
 
-	\pred{PagoPozoCorrecto}{trayectorias, cooperan}{
-
-		\paraTodo[unalinea]{i,j}{\ent}{ ((0 $\leq$ i $<$ \longitud[trayectorias]) \yLuego (1 <= j < \longitud[trayectorias[i]])) \implicaLuego
+	\pred{PagoPozoCorrecto}{trayectorias, cooperan}
+		{\paraTodo[unalinea]{i,j}{\ent}{ ((0 $\leq$ i $<$ \longitud[trayectorias]) \yLuego (1 $\leq$ j $<$ \longitud[trayectorias[i]])) \implicaLuego
 			\IfThenElse{cooperan[i] = True}
 				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i]}
 				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i] + trayectorias[i][j - 1]}
-		}}%chequeo que el recurso del i-esimo jugador a tiempo j se corresponda con su pago del pozo
+		}
+		}%chequeo que el recurso del i-esimo jugador a tiempo j se corresponda con su pago del pozo
 
-	\aux{recursosATiempoJ}{trayectorias, j}{\TLista{\float}}{
-		
-	\paraTodo[unalinea]{i}{\ent}{
+	\aux{recursosATiempoJ}{trayectorias, j}{\TLista{\float}}
+	{\paraTodo[unalinea]{i}{\ent}{
 		(0 $\leq$ i $<$ \longitud[trayectorias]) \implicaLuego 
 		(res[i] = trayectorias[i][j]) 
 	}}%arma una lista de los recursos de los jugadores a tiempo j
 
-	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
-
-	\pred{pred1}{parametros}{expresion}
 \end{proc}
 
 \subsection{Problema 3:}
 
 \begin{proc}{trayectoriaExtrañaEscalera:}{\In trayectoria : \TLista{\float}}{\bool}
 
-	\requiere{\longitud[trayectoria] $\geq$ 3}
+	\requiere{\longitud[trayectoria] $\geq$ 3} %la función de longitud no printea bien, preguntar
 	\asegura{\res = \True \Iff (( \exists ! i \in[1,\longitud[trayectoria]-2]): (trayectoria[i] > trayectoria [i-1] \yLuego trayectoria [i] > trayectoria [i+1] ))}
 \end{proc}
 
