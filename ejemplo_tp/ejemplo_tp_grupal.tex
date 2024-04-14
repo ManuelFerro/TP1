@@ -45,7 +45,7 @@
 	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}
 
 	\requiere{
-		igualLongitud(trayectorias, cooperan, apuestas, pagos, eventos) \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
+		\longitud[trayectorias] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos] \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
 
 		mismoGrupoDeEventos(apuestas, pagos) \yLuego %chequeo si ambas refieren al mismo grupo de posibles eventos
 
@@ -66,9 +66,6 @@
 		 	%chequeo que al final cada trayectoria mida 1 más que la lista de eventos
 		}}
 
-	\pred{igualLongitud}{trayectorias, cooperan, apuestas, pagos, eventos}
-	{\longitud[trayectorias] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos]
-	}
 	\pred{mismoGrupoDeEventos}{apuestas, pagos}
 	{\paraTodo[unalinea]{i}{\ent}{
 		0 $\leq$ i $<$ \longitud[pagos] \implicaLuego \longitud[apuestas][i] = \longitud[pagos][i]}
@@ -137,10 +134,16 @@
 	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}
 
 	\requiere{
-		igualLongitud(recursos, cooperan, apuestas, pagos, eventos) \yLuego	
+		\longitud[recursos] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos] \yLuego
+		todoPositivo() \yLuego
+		mismoGrupoDeEventos(apuestas, pagos) \yLuego
+		todoelRecursofueApostado(apuestas) \yLuego	
 		0 $\leq$ individuo $<$ \longitud[apuestas]}
-	\asegura{expresionBooleana2}
-	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
+	\asegura{RecursosFinales(individuo, recursos, apuestas, pagos, eventos) $\geq$ RecursosFinales(individuo, recursos, apuestas, pagos, eventos)}
+	%se supone que apuestas ya está modificado, sino es así preguntar cómo se indica eso
+
+	\aux{RecursosFinales}{individuo, recursos, apuestas, pagos, eventos}{\float}
+	{recursos[individuo]*(\prod_{n=0}^{\longitud[eventos[individuo]] - 1} [pagos][individuo][eventos[individuo][n]]*[apuestas][individuo][eventos[individuo][n]])}
 	\pred{pred1}{parametros}{expresion} 
 \end{proc}
 
