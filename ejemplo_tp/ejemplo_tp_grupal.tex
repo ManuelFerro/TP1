@@ -42,7 +42,7 @@
 
 \begin{proc}{trayectoriaDeLosFrutosIndividualesALargoPlazo}
 	{\Inout trayectorias: \TLista{\TLista{\float}}, \In cooperan: \TLista{\bool}, \In apuestas: \TLista{\TLista{\float}},
-	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}{\TLista{\TLista{\float}}}
+	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}
 
 	\requiere{
 		igualLongitud(trayectorias, apuestas, pagos, eventos) \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
@@ -55,7 +55,7 @@
 
 		todoelRecursofueApostado(apuestas) \yLuego %chequeo que las apuestas sumadas sean el 100% de los recursos del individuo
 
-		(\longitud[trayectorias[i]] = 1) \yLuego ((\cab)[trayectorias[i]] $<$ 0) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
+		trayectoriasInicialesCorrectas(trayectorias) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
 		}
  
 	\asegura{
@@ -85,6 +85,9 @@
 	{\paraTodo[unalinea]{i,j}{\ent}{
 		(0 $\leq$ i $<$ \longitud[apuestas] \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego (\sum\limits_{n=0}^{j} [apuestas][i][n])}
 	}
+	\pred{trayectoriasInicialesCorrectas}{trayectorias}
+	{\paraTodo[unalinea]{i}{\ent}{
+		(0 $\leq$ i $<$ \longitud[trayectorias]) \implicaLuego ((\longitud[trayectorias[i]] = 1) \yLuego ((\cab)[trayectorias[i]] $>$ 0))}} 
 	
 	\pred{PagoApuestaCorrecto}{trayectorias, apuestas, pagos, eventos}
 		{\paraTodo[unalinea]{i,j}{\ent}{
@@ -129,9 +132,11 @@
 
 \subsection{Problema 5:}
 
-\begin{proc}{individuoActualizaApuesta:}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
+\begin{proc}{individuoActualizaApuesta:}
+	{\In individuo: \nat, \In recursos: \TLista{\float}, \In cooperan: \TLista{\bool}, \Inout apuestas: \TLista{\TLista{\float}},
+	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}{\TLista{\TLista{\float}}}
 
-	\requiere{expresionBooleana1}
+	\requiere{0 $\leq$ individuo $<$ \longitud[apuestas]}
 	\asegura{expresionBooleana2}
 	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
 	\pred{pred1}{parametros}{expresion} 
