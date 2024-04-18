@@ -53,7 +53,7 @@
 
 		todoPositivo(apuestas, pagos) \yLuego %chequeo que todos los pagos sean positivos, igual que todas las apuestas
 
-		todoelRecursofueApostado(apuestas) \yLuego %chequeo que las apuestas sumadas sean el 100% de los recursos del individuo
+		todoElRecursoFueApostado(apuestas) \yLuego %chequeo que las apuestas sumadas sean el 100% de los recursos del individuo
 
 		trayectoriasInicialesCorrectas(trayectorias) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
 		}
@@ -130,12 +130,30 @@
 
 		todoPositivo(recursos, apuestas, pagos) \yLuego
 
-		todoelRecursofueApostado(apuestas) \yLuego	
+		todoElRecursoFueApostado(apuestas) \yLuego	
 
 		0 $\leq$ individuo $<$ \longitud[apuestas]}
 		
-	\asegura{RecursosFinales(individuo, recursos, apuestas, pagos, eventos) $\geq$ RecursosFinales(individuo, recursos, apuestas, pagos, eventos)}
-	%se supone que apuestas ya está modificado, sino es así preguntar cómo se indica eso
+	\asegura{%¿habrá que chequear que solo cambió apuestas[individuo]? ¿cómo se haría eso?
+
+		\longitud[apuestas] = \longitud[pagos] \yLuego %chequeo que la lista de apuestas conserve la longitud
+
+		%la longitud podría chequearse con pagos, eventos, cooperan o recursos,
+		%¿es correcto exigir que se chequee con pagos? sino,
+		%¿habría que hacer un auxiliar para que se permita chequear la longitud con cualquiera? preguntar
+		
+		mismoGrupoDeEventos(apuestas, pagos) \yLuego %chequeo que todas las apuestas (en particular apuestas[individuo]) conserven la longitud
+
+		todoPositivo(recursos, apuestas, pagos) \yLuego %reciclo el pred ya definido, pero este chequea la condición también en recursos y pagos,
+														%¿es correcto? ¿o deberìa chequearse sólo apuestas?
+		
+		todoElRecursoFueApostado(apuestas) \yLuego %chequeo que todas las apuestas (en particular apuestas[individuo]) sigan sumando 1
+		 
+		RecursosFinales(individuo, recursos, apuestas, pagos, eventos) $\geq$ RecursosFinales(individuo, recursos, apuestas, pagos, eventos)
+		%la idea es chequear que los recursos finales individuales que las nuevas apuestas generan sean "los máximos"
+		%¿Cómo hacerlo?
+		
+		}%se supone que apuestas ya está modificado, sino es así preguntar cómo se indica eso
 
 	\pred{todoPositivo}{recursos, apuestas, pagos}
 	{\paraTodo[unalinea]{i,j}{\ent}{
@@ -145,12 +163,13 @@
 
 	\aux{RecursosFinales}{individuo, recursos, apuestas, pagos, eventos}{\float}
 	{recursos[individuo]*(\prod_{n=0}^{\longitud[eventos[individuo]] - 1} [pagos][individuo][eventos[individuo][n]]*[apuestas][individuo][eventos[individuo][n]])}
-	\pred{pred1}{parametros}{expresion} 
+	%una productoria que calcula todo el proceso multiplicativo
+
 \end{proc}
 
 \subsection{Auxiliares de Especificación:}
 
-\aux{todoelRecursofueApostado}{apuestas}{\ent}
+\aux{todoElRecursoFueApostado}{apuestas}{\ent}
 	{\paraTodo[unalinea]{i,j}{\ent}{
 		(0 $\leq$ i $<$ \longitud[apuestas] \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego (\sum\limits_{n=0}^{j} [apuestas][i][n])}
 	}
@@ -163,9 +182,6 @@
 	{\paraTodo[unalinea]{i,j}{\ent}{
 		0 $\leq$ i,j $<$ \longitud[eventos] \implicaLuego \longitud[eventos][i] = \longitud[eventos][j]}
 	}
-
-\pred{predSuelto}{parametros}{\paraTodo[unalinea]{variable}{tipo}{algo \implicaLuego expresion}}
-\pred{predSuelto}{parametros}{\existe[unalinea]{variable}{tipo}{algo \yLuego expresion}}
 
 \section{Demostraciones de correctitud}
 %demostrar que el programa frutoDelTrabajoPuramenteIndividual
