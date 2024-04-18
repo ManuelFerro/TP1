@@ -30,12 +30,40 @@
 
 \subsection{Problema 1:}
 
-\begin{proc}{redistribucionDeLosFrutos:}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
-	%    \modifica{parametro1, parametro2,..}
-	\requiere{expresionBooleana1}
-	\asegura{expresionBooleana2}
-	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
-	\pred{pred1}{parametros}{expresion} 
+\begin{proc}{redistribucionDeLosFrutos:}
+	{\In recursos : \TLista{\ent}\nat, \In cooperan : \TLista{\bool}}{\TLista{\ent}}
+
+	\requiere{
+		\longitud[recursos] = \longitud[cooperan] \yLuego
+
+		todoPositivo[recursos]
+	}
+	\asegura{
+		reparticiones[recursos, cooperan] \yLuego
+
+		todoIgualSiCooperan[recursos, cooperan]
+	}
+
+	\pred{todoPositivo}{recursos}
+	{\paraTodo[unalinea]{i}{\ent}{
+		0 $\leq$ i $<$ \longitud[recursos] \implicaLuego recursos[i] $>$ 0
+	}}
+
+	\pred{reparticiones}{recursos, cooperan}
+	{\paraTodo[unaLinea]{i}{\ent}{
+		(0 $\leq$ i $<$ \longitud[recursos] \implicaLuego ((cooperan[i] = \True \yLuego res[i] = FMC(recursos, cooperan)) \oLuego (cooperan[i] = \False \yLuego res[i] = recursos[i] + FMC(recursos, cooperan))))}
+	}
+
+	\pred{todoIgualSiCooperan}{recursos, cooperan}
+	{\paraTodo[unaLinea]{i,j}{\ent}{
+		0 $\leq$ i,j $<$ \longitud[recursos] \yLuego cooperan[i] = cooperan[j] /implicaLuego recursos[i] = recursos[j]}
+	}
+
+	\aux{FMC}{recursos, cooperan}{\nat}
+	{\paraTodo[unaLinea]{i}{\ent}{
+		0 $\leq$ i $<$ \longitud[recursos] \implicaLuego ( res = (\sum\limits_{n=0}^-{\longitud[recursos] - 1} (if cooperan[i] = \True then recursos[i] else 0 fi) / (\longitud[cooperan] - 1)))}
+	}
+
 \end{proc}
 
 \subsection{Problema 2:}
@@ -109,12 +137,63 @@
 
 \subsection{Problema 4:}
 
-\begin{proc}{individuoDecideSiCooperarONo:}{\In paramIn : \nat, \Inout paramInout : \TLista{\ent}}{tipoRes}
+\begin{proc}{individuoDecideSiCooperarONo:}{\In individuo : \nat, \In recursos : \TLista{\ent} ,\Inout cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}
 
-	\requiere{expresionBooleana1}
-	\asegura{expresionBooleana2}
-	\aux{auxiliar1}{parametros}{tipoRes}{expresion}
-	\pred{pred1}{parametros}{expresion} 
+	\requiere{
+		(\longitud[recursos]=\longitud[cooperan]=\longitud[apuestas]=\longitud[pagos]=\longitud[eventos]) \yLuego (0 $leq$ individuo $<$ \longitud[cooperan]) \yLuego 
+		((\paraTodo[unalinea]{i,j,k,l,m}{\ent}){((0 $\leq$ i $<$ \longitud[recursos] \implicaLuego recursos[i] $>$ 0) \yLuego (0 $\leq$ j,m $<$ \longitud[pagos] \implicaLuego pagos[j][m] $>$ 0) \yLuego (0 $\leq$ k,l $<$ \longitud[apuestas] \implicaLuego apuestas[k][l] $>$ 0))}) %ver como printea el () después del paratodo
+		}
+	\asegura{
+		(evaluarRecursosIndividuo(individuo, apuestas, pagos, recursos, eventos) \yLuego ((\ifthenelse{(\exists i \in)}{evaluarDesertores(recursos, cooperan, apuestas, pagos, eventos)}{\skip}) \yLuego \ifthenelse{test}{evaluarCooperadores(recursos, cooperan, apuestas, pagos, eventos)}{\skip}) \implicaLuego evaluarCooperacion(individuo, recursos, cooperan, apuestas, pagos, eventos)) %preguntar la estructura el existe
+		}
+
+	\aux{evaluarRecursosIndividuo:}{\In individuo : \nat, \In recursos : \TLista{\ent} , \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}{\float}
+		\requiere{
+		(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego (\longitud[pagos[i]]==\longitud[apuestas[i]])})
+		}
+		\asegura{\paraTodo[unalinea]{j}{\ent}{((0 $\leq$ j $<$ \longitud[eventos[individuo]]) \implicaLuego (res = recursos[individuo] + apuestas[individuo][eventos[individuo][j]] * pagos[individuo][eventos[individuo][j]] - apuestas[individuo][eventos[individuo][j]]))} %¿res?
+		}
+	
+
+	\aux{evaluarDesertores:}{\In recursos : \TLista{\float} ,\In cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}{\float} 
+		\requiere{True}
+
+		\asegura{
+			(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego cooperan[i]=False} \implicaLuego evaluarRecursosDesertores(i) \and  ((\sum\limits_{i=0}^{\longitud[recursos] - 1}[recursos][i])/(\sum\limits_{i=0}^{\longitud[cooperan] - 1}(\ifthenelse{cooperan[i]=False}{1}{0}))))
+		}
+		
+		\aux{evaluarRecursosDesertores}{\Inout recursos : \TLista{\ent} ,\In cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}
+			\requiere{
+				(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego (\longitud[pagos[i]]==\longitud[apuestas[i]])})
+			}
+
+				\asegura{
+					(\paraTodo[unalinea]{i,j}{\ent}{(((0 $\leq$ i $<$ \longitud[cooperan] \yLuego cooperan[i]=False)\yLuego (0 $\leq$ j $<$ \longitud[eventos[i]])) \implicaLuego (recursos[i]= recursos[i] - apuestas[i][eventos[i][j]] + apuestas[i][eventos[i][j]]*pagos[i][eventos[i][j]]))})
+				}
+
+	\aux{evaluarCooperadores:}{\In recursos : \TLista{\float} ,\In cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}{\float} 
+		\requiere{True}
+
+		\asegura{
+			(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego cooperan[i]=True} \implicaLuego evaluarRecursosCooperadores(i) \and  ((\sum\limits_{i=0}^{\longitud[recursos] - 1}[recursos][i])/(\sum\limits_{i=0}^{\longitud[cooperan] - 1}(\ifthenelse{cooperan[i]=True}{1}{0}))))
+		}
+		
+		\aux{evaluarRecursosCooperadores}{\Inout recursos : \TLista{\ent} ,\In cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}} %Recursos pasaría a ser una lista de float. Tengo/puedo cambiarlo en la especificación?
+			\requiere{
+				(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego (\longitud[pagos[i]]==\longitud[apuestas[i]])})
+			}
+
+			\asegura{
+				(\paraTodo[unalinea]{i,j}{\ent}{(((0 $\leq$ i $<$ \longitud[cooperan] \yLuego cooperan[i]=True)\yLuego (0 $\leq$ j $<$ \longitud[eventos[i]])) \implicaLuego (recursos[i]= recursos[i] - apuestas[i][eventos[i][j]] + apuestas[i][eventos[i][j]]*pagos[i][eventos[i][j]]))})
+			}
+		
+	\aux{evaluarCooperación}{\In individuo : \nat, \In recursos : \TLista{\ent} ,\Inout cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}
+		\requiere{True}
+
+			\asegura{
+				(((evaluarRecursosIndividuo $\leq$ evaluarDesertores \y evaluarDesertores $>$ evaluarCooperadores)\implicaLuego (cooperan[individuo]= False)) \oLuego ((evaluarRecursosIndividuo $\leq$ evaluarCooperadores \y evaluarCooperadores $>$ evaluarDesertores) \implicaLuego (cooperan[individuo]=True)) \oLuego ((evaluarDesertores == evaluarRecursosCooperadores) \implicaLuego cooperan[individuo] = cooperan[individuo]))
+			}
+
 \end{proc}
 
 \subsection{Problema 5:}
