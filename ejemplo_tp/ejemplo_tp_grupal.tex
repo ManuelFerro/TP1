@@ -291,7 +291,7 @@
 
  Aclarar que se considera que $eventos[i] = True$ equivale a que salió cara.
 
- \vspace{0.3cm}
+\vspace{0.3cm}
 
  Para ello, se argumentará con el Teorema del Invariante y el Teorema de Terminación de Ciclos, cuyas hipotesis afirman que
  para ciertos "(Pc,Qc)" requiere y asegura, "while(B)do S" ciclo, "I" predicado y "fv" función variante, si se cumple:
@@ -340,25 +340,22 @@
 
 \subsection{Pc \implica I}
 
-\begin{equation}
-	Pc \implica I \equiv res = recurso \Y i = 0 \Y Req \implica
-	
-	0 $\leq$ i $\leq$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} (\equiv)
+\begin{equation} %quizás las ecuaciones no están bien identadas, y por eso puede que no compile
+\begin{split} %//poner el requiere acá//
+	& Pc \implica I \\
+	& (\equiv) res = recurso \Y i = 0 \Y Req  \implica \\
+	& 0 $\leq$ i $\leq$ \longitud{eventos} \yLuego
+	  res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
+
+	& (\equiv) res = recurso \Y i = 0 \Y Req \implica 
+	  0 $\leq$ 0 $\leq$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{0-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
+
+	& (\equiv) res = recurso \Y i = 0 \Y Req \implica 
+	  true \yLuego res = recurso * 1
+\end{split} %//poner el requiere acá//
 \end{equation}
 
-\begin{equation}
-	(\equiv) res = recurso \Y i = 0 \Y Req \implica 
-	
-	0 $\leq$ 0 $\leq$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{0-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} (\equiv)
-\end{equation}
-
-\begin{equation}
-	(\equiv) res = recurso \Y i = 0 \Y Req \implica 
-	
-	true \yLuego res = recurso * 1
-\end{equation}
-
- Luego, se comprueba que la precondición es más fuerte que el invariante
+ Luego, se comprueba que la precondición es más fuerte que el invariante.
 
 \subsection{{I \Y B}S{I}}
  La tripla de Hoare {I \Y B}S{I} es válida si y sólo si la expresión $I \Y B \implica wp(S,I)$ es verdadera.
@@ -370,7 +367,7 @@
 
 \begin{equation}
 def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \lor (\neg B_{if} \Y wp(res:= res*apuesta.s*pago.s , I^{i}_{i+1})) \equiv def(B_{if}) \yLuego ("wp1" \lor "wp2")
-\end{equation}res = recurso * \prod\limits_{j=0}
+\end{equation}
 
  Con $B_{if} \equiv eventos[i]$ la guarda del if dentro del ciclo. Observar que B_{if} es la misma guarda del if dentro del invariante, por lo que
  la productoria dentro de I en "wp1" se comportará siempre como $\prod\limits_{j=0}^{i} apuesta.c * pago.c$; analogamente
@@ -381,7 +378,7 @@ def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \l
 
  Observando "wp1":
 
- \begin{equation}
+\begin{equation}
 	res * (apuesta.c * pago.c) = recurso * \prod\limits_{j=0}^{i} apuesta.c * pago.c = \prod\limits_{j=0}^{i-1} apuesta.c * pago.c *apuesta.c * pago.c 
 \end{equation}
 
@@ -393,7 +390,7 @@ def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \l
 
  Analogamente, como apuesta.s y pago.s son no nulos, "wp2" equivale a:
 
-\begin{equation}
+\begin{equation}i $<$ \longitud{eventos}
 	res = recurso * \prod\limits_{j=0}^{i-1} apuesta.s * pago.s
 \end{equation}
 
@@ -409,20 +406,17 @@ def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \l
 	0 $\leq$ i $<$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{equation}
 
-\begin{equation}
-	(\equiv)
-\end{equation}
-
 \subsection{(I \Y \neg B) \implica Qc}
 
  Como la expresión $\neg B$ equivale a $i $\geq$ \longitud{eventos}$, la expresión $I \Y \neg B$ equivale a:
  
- \begin{equation}
-	$\leq$ i = \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} (\equiv)
-\end{equation}
-
 \begin{equation}
-	(\equiv) res = recurso * \prod\limits_{j=0}^{\longitud{eventos}-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
+\begin{split}
+	& $\leq$ i = \longitud{eventos} \yLuego
+	  res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
+
+	& (\equiv) res = recurso * \prod\limits_{j=0}^{\longitud{eventos}-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
+\end{split}
 \end{equation}
 
  Observar que j indexa perfectamente a $eventos$. La productoria multiplica el término (apuesta.c * pago.c) las veces que se cumpla $ eventos[j] = True$,
@@ -435,9 +429,11 @@ def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \l
  opera con un if cuya guarda es booleana, los términos de la misma solo se comportan de 2 maneras, las descritas anteriormente.
  Luego:
 
- \begin{equation}
-	res = recurso * \prod\limits_{j=0}^{\longitud{eventos}-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} \equiv
-	res = recurso * (apuesta.c * pago.c)^{#(eventos, T)} * (apuesta.s * pago.s)^{#(eventos, F)}
+\begin{equation}
+\begin{split}
+	& res = recurso * \prod\limits_{j=0}^{\longitud{eventos}-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
+	& (\equiv) res = recurso * (apuesta.c * pago.c)^{#(eventos, T)} * (apuesta.s * pago.s)^{#(eventos, F)}
+\end{split}
 \end{equation}
 
  Al ser la segunda expresión exactamente Qc, se concluye que (I \Y \neg B) \implica Qc.
@@ -448,15 +444,52 @@ def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \l
 
 \vspace{0.3cm}
 
- Donde $wp(S,fv $<$ V0)$ equivale a $wp(if...; i:= i + 1, I)$, con "if..." representando la elección booleana que ocurre dentro del ciclo.
- Luego, queda: $wp(if..., I^{i}_{i+1})$, que equivale a:
+ Donde $wp(S,fv $<$ V0)$ equivale a $wp(if...; i:= i + 1, \longitud{eventos} -i $<$ V0)$, con "if..." representando la elección booleana que ocurre dentro del ciclo.
+ Luego, queda: $wp(if..., \longitud{eventos} -i - 1 $<$ V0)$, que equivale a:
 
 \begin{equation}
-def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \lor (\neg B_{if} \Y wp(res:= res*apuesta.s*pago.s , I^{i}_{i+1})) \equiv def(B_{if}) \yLuego ("wp1" \lor "wp2")
-\end{equation}res = recurso * \prod\limits_{j=0}
-\begin{equation}
-	(\equiv)
+	def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , \longitud{eventos} -i - 1 $<$ V0)) \lor
+					 (\neg B_{if} \Y wp(res:= res*apuesta.s*pago.s , \longitud{eventos} -i - 1 $<$ V0))
 \end{equation}
+
+ Con $B_{if} \equiv eventos[i]$ la guarda del if dentro del ciclo. Entonces la expresión equivale a:
+
+\begin{equation}
+\begin{split}
+	& 0 $\leq$ i $<$ \longitud{eventos} \yLuego \\
+	& (eventos[i] \Y \longitud{eventos} -i - 1 $<$ V0 \lor \neg eventos[i] \Y \longitud{eventos} -i - 1 $<$ V0) \\
+	& (\equiv) 0 $\leq$ i $<$ \longitud{eventos} \yLuego \longitud{eventos} -i - 1 $<$ V0
+\end{split}
+\end{equation}
+
+ Observando la expresión $(I \Y B) \Y V0 = fv$ se nota que esta equivale a:
+ 
+ \begin{equation}
+	\begin{split}
+		& (0 $\leq$ i $\leq$ \longitud{eventos} \yLuego res = recurso * prodInv)\\
+		& \Y V0 = \longitud{eventos} - i\\
+
+		& (\equiv) (0 $\leq$ i $<$ \longitud{eventos} \yLuego\\
+		& res = recurso * prodInv)\\
+		& \Y V0 = \longitud{eventos} - i
+	\end{split}
+	\end{equation}
+ 
+ considerando "prodInv" como la productoria del invariante: $\prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}$.
+ Luego la expresión $(I \Y B) \Y V0 = fv \implica wp(S,fv $<$ V0)$ queda como:
+
+\begin{equation}
+\begin{split}
+	& (0 $\leq$ i $<$ \longitud{eventos} \yLuego res = recurso * prodInv) \Y V0 = \longitud{eventos} - i\\
+	& \implica 0 $\leq$ i $<$ \longitud{eventos} \yLuego \longitud{eventos} -i - 1 $<$ V0
+\end{split}
+\end{equation}
+
+ Como $V0 = \longitud{eventos} - i$ es más fuerte que la expresión $\longitud{eventos} -i - 1 $<$ V0$, la expresión se verifica.
+
+\vspace{0.3cm}
+
+ Luego se concluye que la tripla de Hoare {(I \Y B) \Y V0 = fv}S{fv $<$ V0} es válida.
 
 \subsection{I \Y fv $\leq$ 0 \implica \neg B}
 
