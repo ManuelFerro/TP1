@@ -263,7 +263,86 @@
 	}
 
 \section{Demostraciones de correctitud}
-%demostrar que el programa frutoDelTrabajoPuramenteIndividual
-%es correcto respecto de su espeficifación (en la consigna)
-%Se hace con wp
+
+Se tiene la siguiente implementación:
+
+\begin{lstlisting}
+	res := recurso;
+	i := 0;
+	while (i < eventos.size()) do
+		if eventos[i] then
+			res := (res * apuesta.c) * pago.c;
+		else
+			res := (res * apuesta.s) * pago.s;
+		endif
+		i := i + 1
+	endwhile
+\end{lstlisting}
+
+Y se quiere demostrar que es correcta respecto de la siguiente especificación:
+
+\begin{proc}{frutoDelTrabajoPuramenteIndividual}{\In recurso: \float, \In apuesta: , \In pago: , \In eventos: \TLista{\bool} }{\float}
+
+	\requiere{expresionBooleana1}
+
+	\asegura{expresionBooleana2}
+
+	\aux{#}{eventos, \bool}{\ent}{expresion}
+\end{proc}
+
+Para ello, se argumentará con el Teorema del Invariante y el Teorema de Terminación de Ciclos, cuyas hipotesis afirman que
+para ciertos "(Pc,Qc)" requiere y asegura, "while(B)do S" ciclo, "I" predicado y "fv" función variable, si se cumple:
+
+\begin{enumerate} \setlength\itemsep{1cm}
+	\item Pc \implica I
+
+	\item {I \Y B}S{I}
+
+	\item (I \Y \false B) \implica Qc %chequear si false B printea bien 
+
+	\item {(I \Y B) \Y V0 = fv}S{fv $<$ V0}
+
+	\item I \Y fv $\leq$ 0 \implica \false B
+\end{enumerate}
+
+Entonces el ciclo es correcto respeto de la especificación y su ejecución siempre termina.
+Se proponen el siguiente Invariante y función variable:
+
+\begin{equation}
+	I: \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
+\end{equation}
+
+\begin{equation}
+	fv: \longitud[eventos] - i
+\end{equation}
+
+Para los datos:
+
+\begin{itemize}
+	\item Pc : res = recurso \Y i := 0 \Y Req
+	\item Qc : Aseq
+	\item B : i $<$ \longitud[eventos]
+	\item S : el ciclo descrito en la implementación.
+\end{itemize}
+
+Se comprueba, primero, si el Pc elegido es correcto para la especificación:
+
+\begin{equation}
+
+\end{equation}
+
+Se comprueba si los dados I y fv cumplen las hipotesis:
+
+\subsection{Pc \implica I}
+
+\subsection{{I \Y B}S{I}}
+
+\subsection{(I \Y \false B) \implica Qc}
+
+\subsection{{(I \Y B) \Y V0 = fv}S{fv $<$ V0}}
+
+\subsection{I \Y fv $\leq$ 0 \implica \false B}
+
+Luego, por lo expuesto en los puntos anteriores, queda demostrado que la implementación dada es correcta respecto de su especificación.
+
 \end{document}
