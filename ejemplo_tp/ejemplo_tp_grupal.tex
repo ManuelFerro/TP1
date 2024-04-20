@@ -282,19 +282,20 @@
  Y se quiere demostrar que es correcta respecto de la siguiente especificación:
 \begin{proc}{frutoDelTrabajoPuramenteIndividual}{\In recurso: \float, \In apuesta: , \In pago: , \In eventos: \TLista{\bool} }{\float}
 
-	\requiere{expresionBooleana1}
+	\requiere{apuesta.c + apuesta.s = 1 \Y pago.c $>$ 0 \Y pago.s $>$ 0 \Y apuesta.c $>$ 0 \Y apuesta.s $>$ 0 \Y recurso $>$ 0}
 
-	\asegura{expresionBooleana2}
+	\asegura{res = recurso * (apuesta.c * pago.c)^{#(eventos, T)} * (apuesta.s * pago.s)^{#(eventos, F)}}
 
-	\aux{#}{eventos, \bool}{\ent}{expresion}
+	%\aux{#}{eventos, \bool}{\ent}{expresion}
 \end{proc}
 
+ Donde #apariciones(eventos,T) es el auxiliar utilizado en la teórica, y #(eventos,T) es su abreviación.
  Aclarar que se considera que $eventos[i] = True$ equivale a que salió cara.
 
 \vspace{0.3cm}
 
  Para ello, se argumentará con el Teorema del Invariante y el Teorema de Terminación de Ciclos, cuyas hipotesis afirman que
- para ciertos "(Pc,Qc)" requiere y asegura, "while(B)do S" ciclo, "I" predicado y "fv" función variante, si se cumple:
+ para ciertos "(Pc,Qc)" requiere y asegura, para cierto "while(B)do S" ciclo, "I" predicado y "fv" función variante, si se llegan a cumplir las siguientes propiedades:
 
 \begin{enumerate} \setlength\itemsep{1cm}
 	\item Pc \implica I
@@ -369,35 +370,51 @@
 def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \lor (\neg B_{if} \Y wp(res:= res*apuesta.s*pago.s , I^{i}_{i+1})) \equiv def(B_{if}) \yLuego ("wp1" \lor "wp2")
 \end{equation}
 
- Con $B_{if} \equiv eventos[i]$ la guarda del if dentro del ciclo. Observar que B_{if} es la misma guarda del if dentro del invariante, por lo que
- la productoria dentro de I en "wp1" se comportará siempre como $\prod\limits_{j=0}^{i} apuesta.c * pago.c$; analogamente
- en "wp2" se comportará como $\prod\limits_{j=0}^{i} apuesta.s * pago.s$. Observar también que el mayor valor que j toma está cambiado
- pues en I se remplazó i por i + 1.
+ Con $B_{if} \equiv eventos[i]$ la guarda del if dentro del ciclo. 
+ Observar que B_{if} es la misma guarda dentro de la productoria,
+ por lo tanto si separamos en casos cuando $B_{if} \lor \neg B_{if}$,
+ se puede sacar de la productoria el caso i-ésimo dependiendo de en que caso estemos.
 
 \vspace{0.3cm}
-
+ 
+ (Analizando ambos casos, omitiremos la indexación de i del invariante, que al reemplazar por i+1 es igual a (-1 $\leq$ i $\leq$ \longitud{eventos} - 1))
  Observando "wp1":
 
 \begin{equation}
-	res * (apuesta.c * pago.c) = recurso * \prod\limits_{j=0}^{i} apuesta.c * pago.c = \prod\limits_{j=0}^{i-1} apuesta.c * pago.c *apuesta.c * pago.c 
+	res * (apuesta.c * pago.c) = recurso * \prod\limits_{j=0}^{i} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} = \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} * (apuesta.c * pago.c) 
 \end{equation}
 
- como apuesta.c y pago.c son no nulos (por el requiere), queda:
+ Como apuesta.c y pago.c no pueden ser nulos (el requiere de la especificación admite apuestas y pagos mayores a cero), podemos pasar dividiendo y queda:
 
 \begin{equation}
-	res = recurso * \prod\limits_{j=0}^{i-1} apuesta.c * pago.c
+	res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{equation}
 
- Analogamente, como apuesta.s y pago.s son no nulos, "wp2" equivale a:
+ Análogamente, como apuesta.s y pago.s son no nulos, "wp2" equivale a:
 
-\begin{equation}i $<$ \longitud{eventos}
-	res = recurso * \prod\limits_{j=0}^{i-1} apuesta.s * pago.s
+\begin{equation}
+	res * (apuesta.s * pago.s) = recurso * \prod\limits_{j=0}^{i} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} = \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} * (apuesta.s * pago.s) 
+\end{equation}
+
+\begin{equation}
+	res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{equation}
 
  Entonces $wp(S,I)$ equivale a:
 
 \begin{equation}
-	-1 $\leq$ i $\leq$ \longitud{eventos} - 1 \yLuego (res = recurso * \prod\limits_{j=0}^{i-1} apuesta.c * pago.c \lor res = recurso * \prod\limits_{j=0}^{i-1} apuesta.s * pago.s) (\equiv) 
+	0 $\leq$ i $<$ \longitud{eventos} \yLuego (( B_{if} \Y -1 $\leq$ i $\leq$ \longitud{eventos} - 1 \Y res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} ) \lor ( \neg B_{if} \Y -1 $\leq$ i $\leq$ \longitud{eventos} - 1 \Y res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} )) (\equiv) 
+\end{equation}
+ 
+ Notar que dejamos de omitir la indexación de i del invariante, y $def(B_{if}) = 0 $\leq$ i $<$ \longitud{eventos}$
+ Simplificando la ecuación, nos queda:
+
+\begin{equation}
+	0 $\leq$ i $<$ \longitud{eventos} \Y res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} \yLuego (eventos[i] = True \lor eventos[i] = False)
+\end{equation}
+
+\begin{equation}
+	0 $\leq$ i $<$ \longitud{eventos} \Y res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{equation}
 
  Observando la expresión $I \Y B$, recordando que $B \equiv i $<$ \longitud{eventos}$ se obtiene que equivale a:
@@ -405,6 +422,18 @@ def(B_{if}) \yLuego ( B_{if} \Y wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \l
 \begin{equation}
 	0 $\leq$ i $<$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{equation}
+
+ Por lo tanto nos queda la misma ecuación en ambos lados de la implicación:
+
+\begin{equation}
+	$I \Y B \implica wp(S,I)$
+\end{equation}
+
+\begin{equation}
+	0 $\leq$ i $<$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} \implica 0 $\leq$ i $<$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
+\end{equation}
+
+ Y terminamos de confirmar que $I$ es un invariante durante del ciclo.
 
 \subsection{(I \Y \neg B) \implica Qc}
 
