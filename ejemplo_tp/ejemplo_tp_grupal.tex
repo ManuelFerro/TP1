@@ -28,10 +28,10 @@
 
 \section{Especificación}
 
-\subsection{Problema 1:}
-
  Se tienen 5 problemas escritos en lenguaje coloquial, y se pide realizar una especificación correcta ara cada uno de ellos.
  (la correctitud de estas no será verificada, solo se enunciarán las especificiones propuestas).
+
+\subsection{Problema 1:}
 
 \begin{proc}{redistribucionDeLosFrutos:}
 	{\In recursos : \TLista{\ent}\nat, \In cooperan : \TLista{\bool}}{\TLista{\ent}}
@@ -75,8 +75,10 @@
 	{\Inout trayectorias: \TLista{\TLista{\float}}, \In cooperan: \TLista{\bool}, \In apuestas: \TLista{\TLista{\float}},
 	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}
 
+\vspace{0.3cm}
+
 	\requiere{
-		\longitud[trayectorias] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos] \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
+		\longitud{trayectorias} = \longitud{cooperan} = \longitud{apuestas} = \longitud{pagos} = \longitud{eventos} \yLuego %chequeo si las listas trabajan el mismo grupo de individuos
 
 		mismoGrupoDeEventos(apuestas, pagos) \yLuego %chequeo si ambas refieren al mismo grupo de posibles eventos
 
@@ -86,47 +88,50 @@
 
 		todoElRecursoFueApostado(apuestas) \yLuego %chequeo que las apuestas sumadas sean el 100% de los recursos del individuo
 
-		trayectoriasInicialesCorrectas(trayectorias) %chequeo que trayectorias esta en "estado incial", y que son todas positivas
-		}
- 
+		trayectoriasInicialesCorrectas(trayectorias)} %chequeo que trayectorias esta en "estado incial", y que son todas positivas
+
+\vspace{0.3cm}
+
 	\asegura{
 		PagoApuestaCorrecto(trayectorias, apuestas, pagos, eventos) \yLuego
 		PagoPozoCorrecto(trayectorias, cooperan) \yLuego
 		\paraTodo[unalinea]{i}{\ent}{
-			0 $\leq$ i $<$ \longitud[eventos] \implicaLuego \longitud[trayectorias[i]] = \longitud[eventos[i]] + 1
+			0 $\leq$ i $<$ \longitud{eventos} \implicaLuego \longitud{trayectorias[i]} = \longitud{eventos[i]} + 1}}
 		 	%chequeo que al final cada trayectoria mida 1 más que la lista de eventos
-		}}
+
+\vspace{0.3cm}
 
 	\pred{todoPositivo}{apuestas, pagos}
 	{\paraTodo[unalinea]{i,j}{\ent}{
-		(0 $\leq$ i $<$ \longitud[apuestas] \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego (apuestas[i][j] $>$ 0 \yLuego pagos[i][j] $>$ 0)}
-	}
-	
+		(0 $\leq$ i $<$ \longitud{apuestas} \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego (apuestas[i][j] > 0 \yLuego pagos[i][j] > 0)}}
+
+\vspace{0.3cm}
+
 	\pred{trayectoriasInicialesCorrectas}{trayectorias}
 	{\paraTodo[unalinea]{i}{\ent}{
-		(0 $\leq$ i $<$ \longitud[trayectorias]) \implicaLuego ((\longitud[trayectorias[i]] = 1) \yLuego ((\cab)[trayectorias[i]] $>$ 0))}
-	} 
+	(0 $\leq$ i $<$ \longitud{trayectorias}) \implicaLuego (\longitud{trayectorias[i]} = 1) \yLuego (\cab{trayectorias[i]} > 0)}} 
+
+\vspace{0.3cm}
 	
-	\pred{PagoApuestaCorrecto}{trayectorias, apuestas, pagos, eventos}
+		\pred{PagoApuestaCorrecto}{trayectorias, apuestas, pagos, eventos}
 		{\paraTodo[unalinea]{i,j}{\ent}{
-			((0 $\leq$ i $<$ \longitud[trayectorias]) \yLuego (1 $\leq$ j $<$ \longitud[trayectorias[i]])) \implicaLuego %acomodo los índices
-	 		(trayectorias[i][j] = trayectorias[i][j - 1]*apuestas[i][eventos[i][j - 1]]*pagos[i][eventos[i][j - 1]])
-	 	}
-		}%chequeo que el recurso del i-esimo jugador a tiempo j sea su anterior multiplicado por la apuesta y el pago que correspondan
+			((0 $\leq$ i $<$ \longitud{trayectorias}) \yLuego (1 $\leq$ j $<$ \longitud{trayectorias[i]})) \implicaLuego \\%acomodo los índices
+	 		(trayectorias[i][j] = trayectorias[i][j - 1]*apuestas[i][eventos[i][j - 1]]*pagos[i][eventos[i][j - 1]])}}%chequeo que el recurso del i-esimo jugador a tiempo j sea su anterior multiplicado por la apuesta y el pago que correspondan
+
+\vspace{0.3cm}
 
 	\pred{PagoPozoCorrecto}{trayectorias, cooperan}
-		{\paraTodo[unalinea]{i,j}{\ent}{ ((0 $\leq$ i $<$ \longitud[trayectorias]) \yLuego (1 $\leq$ j $<$ \longitud[trayectorias[i]])) \implicaLuego
-			\IfThenElse{cooperan[i] = True}
-				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i]}
-				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i] + trayectorias[i][j - 1]}
-		}
-		}%chequeo que el recurso del i-esimo jugador a tiempo j se corresponda con su pago del pozo
+		{\paraTodo[unalinea]{i,j}{\ent}{ ((0 $\leq$ i $<$ \longitud{trayectorias}) \yLuego (1 $\leq$ j $<$ \longitud{trayectorias[i]})) \implicaLuego \\
+			\IfThenElse{cooperan[i] = True} \\
+				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i]} \\
+				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i] + trayectorias[i][j - 1]}}}%chequeo que el recurso del i-esimo jugador a tiempo j se corresponda con su pago del pozo
+
+\vspace{0.3cm}
 
 	\aux{recursosATiempoJ}{trayectorias, j}{\TLista{\float}}
 	{\paraTodo[unalinea]{i}{\ent}{
-		(0 $\leq$ i $<$ \longitud[trayectorias]) \implicaLuego 
-		(res[i] = trayectorias[i][j]) 
-	}}%arma una lista de los recursos de los jugadores a tiempo j
+		(0 $\leq$ i $<$ \longitud{trayectorias}) \implicaLuego 
+		(res[i] = trayectorias[i][j])}}%arma una lista de los recursos de los jugadores a tiempo j
 
 \end{proc}
 
@@ -134,8 +139,8 @@
 
 \begin{proc}{trayectoriaExtrañaEscalera:}{\In trayectoria : \TLista{\float}}{\bool}
 
-	\requiere{\longitud[trayectoria] $\geq$ 3} %la función de longitud no printea bien, preguntar
-	\asegura{\res = \True \Iff (( \exists ! i \in[1,\longitud[trayectoria]-2]): (trayectoria[i] > trayectoria [i-1] \yLuego trayectoria [i] > trayectoria [i+1] ))}
+	\requiere{\longitud{trayectoria} $\geq$ 3} %la función de longitud no printea bien, preguntar
+	\asegura{\res = \True \Iff (( \exists ! i \in[1,\longitud{trayectoria}-2]): (trayectoria[i] > trayectoria [i-1] \yLuego trayectoria [i] > trayectoria [i+1] ))}
 \end{proc}
 
 \subsection{Problema 4:}
@@ -253,16 +258,16 @@
 
 \aux{todoElRecursoFueApostado}{apuestas}{\ent}
 	{\paraTodo[unalinea]{i,j}{\ent}{
-		(0 $\leq$ i $<$ \longitud[apuestas] \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego (\sum\limits_{n=0}^{j} [apuestas][i][n])}
+		(0 $\leq$ i $<$ \longitud{apuestas} \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego (\sum\limits_{n=0}^{j} [apuestas][i][n])}
 	}
 
 \pred{mismoGrupoDeEventos}{apuestas, pagos}
 	{\paraTodo[unalinea]{i}{\ent}{
-		0 $\leq$ i $<$ \longitud[pagos] \implicaLuego \longitud[apuestas][i] = \longitud[pagos][i]}
+		0 $\leq$ i $<$ \longitud{pagos} \implicaLuego \longitud{apuestas}[i] = \longitud{pagos}[i]}
 	}
 \pred{igualCantidadDeEventosPorIndividuo}{eventos}
 	{\paraTodo[unalinea]{i,j}{\ent}{
-		0 $\leq$ i,j $<$ \longitud[eventos] \implicaLuego \longitud[eventos][i] = \longitud[eventos][j]}
+		0 $\leq$ i,j $<$ \longitud{eventos} \implicaLuego \longitud{eventos}[i] = \longitud{eventos}[j]}
 	}
 
 \section{Demostraciones de correctitud}
@@ -319,7 +324,7 @@
  Se proponen el siguiente Invariante y función variable:
 
 \begin{equation}
-	I: 0 $\leq$ i $\leq$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
+	I: 0 \leq i \leq \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{equation}
 
 \begin{equation}
@@ -331,13 +336,13 @@
 \begin{itemize}
 	\item Pc : res = recurso \land i = 0 \land
 		(apuesta.c + apuesta.s = 1 \land pago.c $>$ 0 \land pago.s $>$ 0 \land apuesta.c $>$ 0 \land apuesta.s $>$ 0 \land recurso $>$ 0)
-	\item Qc : res = recurso * (apuesta.c * pago.c)^{#(eventos, T)} * (apuesta.s * pago.s)^{#(eventos, F)}
+	\item Qc : res = recurso * (apuesta.c * pago.c)$^{#(eventos, T)$} * (apuesta.s * pago.s)$^{#(eventos, F)$}
 	\item B : i $<$ \longitud{eventos}
 	\item S : el ciclo descrito en la implementación.
 \end{itemize}
 
  Por motivos de simplificar la notación y garantizar la comprensión del texto, la expresión
- $apuesta.c + apuesta.s = 1 \land pago.c $>$ 0 \land pago.s $>$ 0 \land apuesta.c $>$ 0 \land apuesta.s $>$ 0 \land recurso $>$ 0$
+ $apuesta.c + apuesta.s = 1 \land pago.c > 0 \land pago.s > 0 \land apuesta.c > 0 \land apuesta.s > 0 \land recurso > 0$
  será referida como "Req" (abreviasión de requiere) de ahora en adelante.
  
 \vspace{0.3cm}
@@ -350,11 +355,11 @@
 \begin{split} 
 	& Pc \implica I \\
 	& (\equiv) res = recurso \land i = 0 \land Req  \implica \\
-	& 0 $\leq$ i $\leq$ \longitud{eventos} \yLuego 
+	& 0 \leq i \leq \longitud{eventos} \yLuego 
 	res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
 
 	& (\equiv) res = recurso \land i = 0 \land Req \implica 
-	0 $\leq$ 0 $\leq$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{0-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
+	0 \leq 0 \leq \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{0-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
 
 	& (\equiv) res = recurso \land i = 0 \land Req \implica 
 	true \yLuego res = recurso * 1
@@ -380,13 +385,13 @@
 \end{equation}
 
  Con $B_{if} \equiv eventos[i]$ la guarda del if dentro del ciclo. 
- Observar que B_{if} es la misma guarda dentro de la productoria,
+ Observar que $B_{if}$ es la misma guarda dentro de la productoria,
  por lo tanto si separamos en casos cuando $B_{if} \lor \neg B_{if}$,
  se puede sacar de la productoria el caso i-ésimo dependiendo de en que caso estemos.
 
 \vspace{0.3cm}
  
- (Analizando ambos casos, omitiremos la indexación de i del invariante, que al reemplazar por i+1 es igual a (-1 $\leq$ i $\leq$ \longitud{eventos} - 1))
+ (Analizando ambos casos, omitiremos la indexación de i del invariante, que al reemplazar por i+1 es igual a $-1 \leq i \leq \longitud{eventos} - 1$)
  Observando "wp1":
 
 \begin{equation}
@@ -420,41 +425,41 @@
 
 \begin{equation}
 \begin{split}
-	& 0 $\leq$ i $<$ \longitud{eventos} \yLuego\\
-	& (( B_{if} \land -1 $\leq$ i $\leq$ \longitud{eventos} - 1 \land res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} ) \lor\\
+	& 0 \leq i < \longitud{eventos} \yLuego\\
+	& (( B_{if} \land -1 \leq i \leq \longitud{eventos} - 1 \land res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} ) \lor\\
 
-	& ( \neg B_{if} \land -1 $\leq$ i $\leq$ \longitud{eventos} - 1 \land res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} ))
+	& ( \neg B_{if} \land -1 \leq i \leq \longitud{eventos} - 1 \land res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} ))
 \end{split}
 \end{equation}
  
- Notar que dejamos de omitir la indexación de i del invariante, y $def(B_{if}) = 0 $\leq$ i $<$ \longitud{eventos}$
+ Notar que dejamos de omitir la indexación de i del invariante, y $def(B_{if}) = 0 \leq i < \longitud{eventos}$
  Simplificando la ecuación, nos queda:
 
 \begin{equation}
 \begin{split}
-	& 0 $\leq$ i $<$ \longitud{eventos} \land res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} \yLuego (eventos[i] = True \lor eventos[i] = False)\\
+	& 0 \leq i < \longitud{eventos} \land res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} \yLuego (eventos[i] = True \lor eventos[i] = False)\\
 
-	& 0 $\leq$ i $<$ \longitud{eventos} \land res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
+	& 0 \leq i < \longitud{eventos} \land res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{split}
 \end{equation}
 
- Observando la expresión $I \land B$, recordando que $B \equiv i $<$ \longitud{eventos}$ se obtiene que equivale a:
+ Observando la expresión $I \land B$, recordando que $B \equiv i < \longitud{eventos}$ se obtiene que equivale a:
 
 \begin{equation}
-	0 $\leq$ i $<$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
+	0 \leq i < \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{equation}
 
  Por lo tanto nos queda la misma ecuación en ambos lados de la implicación:
 
 \begin{equation}
-	$I \land B \implica wp(S,I)$
+	I \land B \implica wp(S,I)
 \end{equation}
 
 \begin{equation}
 \begin{split}
-	& 0 $\leq$ i $<$ \longitud{eventos} \yLuego
+	& 0 \leq i < \longitud{eventos} \yLuego
 	res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
-	&\implica 0 $\leq$ i $<$ \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
+	&\implica 0 \leq i < \longitud{eventos} \yLuego res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{split}
 \end{equation}
 
@@ -462,11 +467,11 @@
 
 \subsection{(I \land \neg B) \implica Qc}
 
- Como la expresión $\neg B$ equivale a $i $\geq$ \longitud{eventos}$, la expresión $I \land \neg B$ equivale a:
+ Como la expresión $\neg B$ equivale a $i \geq \longitud{eventos}$, la expresión $I \land \neg B$ equivale a:
  
 \begin{equation}
 \begin{split}
-	& $\leq$ i = \longitud{eventos} \yLuego
+	& \leq i = \longitud{eventos} \yLuego
 	  res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
 
 	& (\equiv) res = recurso * \prod\limits_{j=0}^{\longitud{eventos}-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
@@ -475,11 +480,11 @@
 
  Observar que j indexa perfectamente a $eventos$. La productoria multiplica el término (apuesta.c * pago.c) las veces que se cumpla $ eventos[j] = True$,
  es decir, el término (apuesta.c * pago.c) aparece multiplicando exactamente #(eventos, T). Luego,
- (apuesta.c * pago.c)^{#(eventos, T)} es una parte de la productoria.
+ (apuesta.c * pago.c)$^{#(eventos, T)$} es una parte de la productoria.
 
 \vspace{0.3cm}
   
- Analogamente, (apuesta.s * pago.s)^{#(eventos, F)} es una parte de la productoria. como la productoria
+ Analogamente, (apuesta.s * pago.s)$^{#(eventos, F)$} es una parte de la productoria. como la productoria
  opera con un if cuya guarda es booleana, los términos de la misma solo se comportan de 2 maneras, las descritas anteriormente.
  Luego:
 
@@ -495,25 +500,26 @@
 \subsection{{(I \land B) \land V0 = fv}S{fv $<$ V0}}
 
  La tripla de Hoare {(I \land B) \land V0 = fv}S{fv $<$ V0} es válida si y sólo si la expresión
- $(I \land B) \land V0 = fv \implica wp(S,fv $<$ V0)$ es verdadera.
+ $(I \land B) \land V0 = fv \implica wp(S,fv < V0)$ es verdadera.
 
 \vspace{0.3cm}
 
- Donde $wp(S,fv $<$ V0)$ equivale a $wp(if...; i:= i + 1, \longitud{eventos} -i $<$ V0)$, con "if..." representando la elección booleana que ocurre dentro del ciclo.
- Luego, queda: $wp(if..., \longitud{eventos} -i - 1 $<$ V0)$, que equivale a:
+ Donde $wp(S,fv < V0)$ equivale a $wp(if...; i:= i + 1, \longitud{eventos} -i < V0)$,
+ con "if..." representando la elección booleana que ocurre dentro del ciclo.
+ Luego, queda: $wp(if..., \longitud{eventos} -i - 1 < V0)$, que equivale a:
 
 \begin{equation}
-	def(B_{if}) \yLuego ( B_{if} \land wp(res:= res*apuesta.c*pago.c , \longitud{eventos} -i - 1 $<$ V0)) \lor
-					 (\neg B_{if} \land wp(res:= res*apuesta.s*pago.s , \longitud{eventos} -i - 1 $<$ V0))
+	def(B_{if}) \yLuego ( B_{if} \land wp(res:= res*apuesta.c*pago.c , \longitud{eventos} -i - 1 < V0)) \lor
+					 (\neg B_{if} \land wp(res:= res*apuesta.s*pago.s , \longitud{eventos} -i - 1 < V0))
 \end{equation}
 
  Con $B_{if} \equiv eventos[i]$ la guarda del if dentro del ciclo. Entonces la expresión equivale a:
 
 \begin{equation}
 \begin{split}
-	& 0 $\leq$ i $<$ \longitud{eventos} \yLuego \\
-	& (eventos[i] \land \longitud{eventos} -i - 1 $<$ V0 \lor \neg eventos[i] \land \longitud{eventos} -i - 1 $<$ V0) \\
-	& (\equiv) 0 $\leq$ i $<$ \longitud{eventos} \yLuego \longitud{eventos} -i - 1 $<$ V0
+	& 0 \leq i < \longitud{eventos} \yLuego \\
+	& (eventos[i] \land \longitud{eventos} -i - 1 < V0 \lor \neg eventos[i] \land \longitud{eventos} -i - 1 < V0) \\
+	& (\equiv) 0 \leq i < \longitud{eventos} \yLuego \longitud{eventos} -i - 1 < V0
 \end{split}
 \end{equation}
 
@@ -521,26 +527,26 @@
  
  \begin{equation}
 	\begin{split}
-		& (0 $\leq$ i $\leq$ \longitud{eventos} \yLuego res = recurso * prodInv)\\
+		& (0 \leq i \leq \longitud{eventos} \yLuego res = recurso * prodInv)\\
 		& \land V0 = \longitud{eventos} - i\\
 
-		& (\equiv) (0 $\leq$ i $<$ \longitud{eventos} \yLuego\\
+		& (\equiv) (0 \leq i < \longitud{eventos} \yLuego\\
 		& res = recurso * prodInv)\\
 		& \land V0 = \longitud{eventos} - i
 	\end{split}
 	\end{equation}
  
  considerando "prodInv" como la productoria del invariante: $\prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}$.
- Luego la expresión $(I \land B) \land V0 = fv \implica wp(S,fv $<$ V0)$ queda como:
+ Luego la expresión $(I \land B) \land V0 = fv \implica wp(S,fv < V0)$ queda como:
 
 \begin{equation}
 \begin{split}
-	& (0 $\leq$ i $<$ \longitud{eventos} \yLuego res = recurso * prodInv) \land V0 = \longitud{eventos} - i\\
-	& \implica 0 $\leq$ i $<$ \longitud{eventos} \yLuego \longitud{eventos} -i - 1 $<$ V0
+	& (0 \leq i < \longitud{eventos} \yLuego res = recurso * prodInv) \land V0 = \longitud{eventos} - i\\
+	& \implica 0 \leq i < \longitud{eventos} \yLuego \longitud{eventos} -i - 1 < V0
 \end{split}
 \end{equation}
 
- Como $V0 = \longitud{eventos} - i$ es más fuerte que la expresión $\longitud{eventos} -i - 1 $<$ V0$, la expresión se verifica.
+ Como $V0 = \longitud{eventos} - i$ es más fuerte que la expresión $\longitud{eventos} -i - 1 < V0$, la expresión se verifica.
 
 \vspace{0.3cm}
 
@@ -554,14 +560,14 @@
 	I \land fv=0 \equiv I \land \longitud{eventos} - i = 0 \equiv I \land i = \longitud{eventos}
 \end{equation}
 
- Luego, como $\neg B \equiv i $\geq$ \longitud{eventos}$, queda:
+ Luego, como $\neg B \equiv i \geq \longitud{eventos}$, queda:
 
 \begin{equation}
-	I \land i = \longitud{eventos} \implica i $\geq$ \longitud{eventos}
+	I \land i = \longitud{eventos} \implica i \geq \longitud{eventos}
 \end{equation}
 
- Como la espresión $i = \longitud{eventos}$ es más fuerte que $\implica i $\geq$ \longitud{eventos}$,
- la expresión $I \land fv $\leq$ 0 \implica \neg B$ es verdadera.
+ Como la espresión $i = \longitud{eventos}$ es más fuerte que $\implica i \geq \longitud{eventos}$,
+ la expresión $I \land fv \leq 0 \implica \neg B$ es verdadera.
 
  Luego, por lo expuesto en los puntos anteriores, queda demostrado que la implementación dada es correcta respecto de su especificación.
 
