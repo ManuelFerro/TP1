@@ -122,8 +122,8 @@
 
 	\pred{PagoPozoCorrecto}{trayectorias, cooperan}
 		{\paraTodo[unalinea]{i,j}{\ent}{ ((0 $\leq$ i $<$ \longitud{trayectorias}) \yLuego (1 $\leq$ j $<$ \longitud{trayectorias[i]})) \implicaLuego \\
-			\IfThenElse{cooperan[i] = True} \\
-				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i]} \\
+			\IfThenElse{cooperan[i] = True}\\
+				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i]}\\
 				{trayectorias[i][j] = redistribucionDeLosFrutos (recursosATiempoJ(trayectorias, j)[i], cooperan)[i] + trayectorias[i][j - 1]}}}%chequeo que el recurso del i-esimo jugador a tiempo j se corresponda con su pago del pozo
 
 \vspace{0.3cm}
@@ -274,6 +274,8 @@
 
  Se tiene la siguiente implementación:
 
+\vspace{0.3cm}
+
 \begin{lstlisting}
 	res := recurso;
 	i := 0;
@@ -287,36 +289,41 @@
 	endwhile
 \end{lstlisting}
 
+\vspace{0.3cm}
+
  Y se quiere demostrar que es correcta respecto de la siguiente especificación:
 \begin{proc}{frutoDelTrabajoPuramenteIndividual}{\In recurso: \float, \In apuesta: , \In pago: , \In eventos: \TLista{\bool} }{\float}
 
-	\requiere{apuesta.c + apuesta.s = 1 \land pago.c $>$ 0 \land pago.s $>$ 0 \land apuesta.c $>$ 0 \land apuesta.s $>$ 0 \land recurso $>$ 0}
+	\requiere{apuesta.c + apuesta.s = 1 \land pago.c > 0 \land pago.s > 0 \land apuesta.c > 0 \land apuesta.s > 0 \land recurso > 0}
 
-	\asegura{res = recurso * (apuesta.c * pago.c)^{#(eventos, T)} * (apuesta.s * pago.s)^{#(eventos, F)}}
+	\asegura{$res = recurso * (apuesta.c * pago.c)^{apariciones(eventos,T)} * (apuesta.s * pago.s)^{apariciones(eventos,F)}$}
 
-	%\aux{#}{eventos, \bool}{\ent}{expresion}
 \end{proc}
-
- Donde #apariciones(eventos,T) es el auxiliar utilizado en la teórica, y #(eventos,T) es su abreviación.
- Aclarar que se considera que $eventos[i] = True$ equivale a que salió cara.
 
 \vspace{0.3cm}
 
+ Donde apariciones(eventos,T) es un auxiliar que cuenta cuántas veces aparece el elemento T en la lista eventos.
+ Aclarar que se considera que $eventos[i] = True$ equivale a que salió cara.
+
+\vspace{0.3cm} 
+
  Para ello, se argumentará con el Teorema del Invariante y el Teorema de Terminación de Ciclos, cuyas hipotesis afirman que
- para ciertos "(Pc,Qc)" requiere y asegura, y para cierto "while(B)do S" ciclo, "I" predicado y "fv" función variante,
+ para ciertos (Pc,Qc) requiere y asegura, y para cierto (while(B)do S) ciclo, I predicado y fv función variante,
  si se llegan a cumplir las siguientes propiedades:
 
 \begin{enumerate} \setlength\itemsep{1cm}
 	\item Pc \implica I
 
-	\item {I \land B}S{I}
+	\item (I \land B)S(I)
 
 	\item (I \land \neg B) \implica Qc %chequear si false B printea bien 
 
-	\item {(I \land B) \land V0 = fv}S{fv $<$ V0}
+	\item ((I \land B) \land V0 = fv)S(fv < V0)
 
 	\item I \land fv $\leq$ 0 \implica \neg B
 \end{enumerate}
+
+\vspace{0.3cm}
 
  Entonces I es un invariante del ciclo, se cumple la poscondición a la salida del ciclo,
  la función variante es estrictamente decreciente y si alcanza la cota inferior la guarda ya no se cumple.
@@ -334,16 +341,15 @@
  Para los datos:
 
 \begin{itemize}
-	\item Pc : res = recurso \land i = 0 \land
-		(apuesta.c + apuesta.s = 1 \land pago.c $>$ 0 \land pago.s $>$ 0 \land apuesta.c $>$ 0 \land apuesta.s $>$ 0 \land recurso $>$ 0)
-	\item Qc : res = recurso * (apuesta.c * pago.c)$^{#(eventos, T)$} * (apuesta.s * pago.s)$^{#(eventos, F)$}
+	\item Pc : $res = recurso \land i = 0 \land (apuesta.c + apuesta.s = 1 \land pago.c > 0 \land pago.s > 0 \land apuesta.c > 0 \land apuesta.s > 0 \land recurso > 0)$
+	\item Qc : $res = recurso * (apuesta.c * pago.c)^{apariciones(eventos, T)} * (apuesta.s * pago.s)^{apariciones(eventos, F)}$
 	\item B : i $<$ \longitud{eventos}
 	\item S : el ciclo descrito en la implementación.
 \end{itemize}
 
  Por motivos de simplificar la notación y garantizar la comprensión del texto, la expresión
  $apuesta.c + apuesta.s = 1 \land pago.c > 0 \land pago.s > 0 \land apuesta.c > 0 \land apuesta.s > 0 \land recurso > 0$
- será referida como "Req" (abreviasión de requiere) de ahora en adelante.
+ será referida como Req (abreviasión de requiere) de ahora en adelante.
  
 \vspace{0.3cm}
 
@@ -354,7 +360,7 @@
 \begin{equation} %quizás las ecuaciones no están bien identadas, y por eso puede que no compile
 \begin{split} 
 	& Pc \implica I \\
-	& (\equiv) res = recurso \land i = 0 \land Req  \implica \\
+	& res = recurso \land i = 0 \land Req  \implica \\
 	& 0 \leq i \leq \longitud{eventos} \yLuego 
 	res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
 
@@ -368,31 +374,33 @@
 
  Luego, se comprueba que la precondición es más fuerte que el invariante.
 
-\subsection{{I \land B}S{I}}
- La tripla de Hoare {I \land B}S{I} es válida si y sólo si la expresión $I \land B \implica wp(S,I)$ es verdadera.
+\subsection{(I \land B)S(I)}
+
+ La tripla de Hoare (I \land B)S(I) es válida si y sólo si la expresión $I \land B \implica wp(S,I)$ es verdadera.
 
 \vspace{0.3cm}
 
- Donde $wp(S,I)$ equivale a $wp(if...; i:= i + 1, I)$, con "if..." representando la elección booleana que ocurre dentro del ciclo.
+ Donde $wp(S,I)$ equivale a $wp(if...; i:= i + 1, I)$, con if... representando la elección booleana que ocurre dentro del ciclo.
  Luego, queda: $wp(if..., I^{i}_{i+1})$, que equivale a:
 
 \begin{equation}
 \begin{split}
 	& def(B_{if}) \yLuego ( B_{if} \land wp(res:= res*apuesta.c*pago.c , I^{i}_{i+1})) \lor 
 	(\neg B_{if} \land wp(res:= res*apuesta.s*pago.s , I^{i}_{i+1}))\\
-	& (\equiv) def(B_{if}) \yLuego ("wp1" \lor "wp2")
+	& (\equiv) def(B_{if}) \yLuego (wp1 \lor wp2)
 \end{split}
 \end{equation}
 
- Con $B_{if} \equiv eventos[i]$ la guarda del if dentro del ciclo. 
+ Con $B_{if} \equiv eventos[i]$ la guarda del if dentro del ciclo y 
+ wp1; wp2 abreviaciones de las 2 expresiones de wp. 
  Observar que $B_{if}$ es la misma guarda dentro de la productoria,
  por lo tanto si separamos en casos cuando $B_{if} \lor \neg B_{if}$,
  se puede sacar de la productoria el caso i-ésimo dependiendo de en que caso estemos.
 
 \vspace{0.3cm}
  
- (Analizando ambos casos, omitiremos la indexación de i del invariante, que al reemplazar por i+1 es igual a $-1 \leq i \leq \longitud{eventos} - 1$)
- Observando "wp1":
+ (Analizando ambos casos, omitiremos la indexación de i del invariante, que al reemplazar por i+1 es igual a $-1 \leq i \leq \longitud{eventos} - 1$).
+ Observando wp1:
 
 \begin{equation}
 \begin{split}
@@ -408,11 +416,13 @@
 	res = recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}
 \end{equation}
 
- Análogamente, como apuesta.s y pago.s son no nulos, "wp2" equivale a:
+ Análogamente, como apuesta.s y pago.s son no nulos, wp2 equivale a:
 
 \begin{equation}
+\begin{split}
 	& res * (apuesta.s * pago.s) = recurso * \prod\limits_{j=0}^{i} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} =\\
 	& recurso * \prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s} * (apuesta.s * pago.s)\\
+\end{split}
 \end{equation}
 
  Luego:
@@ -479,33 +489,33 @@
 \end{equation}
 
  Observar que j indexa perfectamente a $eventos$. La productoria multiplica el término (apuesta.c * pago.c) las veces que se cumpla $ eventos[j] = True$,
- es decir, el término (apuesta.c * pago.c) aparece multiplicando exactamente #(eventos, T). Luego,
- (apuesta.c * pago.c)$^{#(eventos, T)$} es una parte de la productoria.
+ es decir, el término (apuesta.c * pago.c) aparece multiplicando exactamente (eventos, T). Luego,
+ (apuesta.c * pago.c)$^{apariciones(eventos, T)}$ es una parte de la productoria.
 
 \vspace{0.3cm}
   
- Analogamente, (apuesta.s * pago.s)$^{#(eventos, F)$} es una parte de la productoria. como la productoria
+ Analogamente, (apuesta.s * pago.s)$^{apariciones(eventos, F)}$ es una parte de la productoria. como la productoria
  opera con un if cuya guarda es booleana, los términos de la misma solo se comportan de 2 maneras, las descritas anteriormente.
  Luego:
 
 \begin{equation}
 \begin{split}
 	& res = recurso * \prod\limits_{j=0}^{\longitud{eventos}-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}\\
-	& (\equiv) res = recurso * (apuesta.c * pago.c)^{#(eventos, T)} * (apuesta.s * pago.s)^{#(eventos, F)}
+	& (\equiv) res = recurso * (apuesta.c * pago.c)^{apariciones(eventos, T)} * (apuesta.s * pago.s)^{apariciones(eventos, F)}
 \end{split}
 \end{equation}
 
  Al ser la segunda expresión exactamente Qc, se concluye que (I \land \neg B) \implica Qc.
 
-\subsection{{(I \land B) \land V0 = fv}S{fv $<$ V0}}
+\subsection{((I \land B) \land V0 = fv)S(fv < V0)}
 
- La tripla de Hoare {(I \land B) \land V0 = fv}S{fv $<$ V0} es válida si y sólo si la expresión
+ La tripla de Hoare ((I \land B) \land V0 = fv)S(fv < V0) es válida si y sólo si la expresión
  $(I \land B) \land V0 = fv \implica wp(S,fv < V0)$ es verdadera.
 
 \vspace{0.3cm}
 
  Donde $wp(S,fv < V0)$ equivale a $wp(if...; i:= i + 1, \longitud{eventos} -i < V0)$,
- con "if..." representando la elección booleana que ocurre dentro del ciclo.
+ con if... representando la elección booleana que ocurre dentro del ciclo.
  Luego, queda: $wp(if..., \longitud{eventos} -i - 1 < V0)$, que equivale a:
 
 \begin{equation}
@@ -536,7 +546,7 @@
 	\end{split}
 	\end{equation}
  
- considerando "prodInv" como la productoria del invariante: $\prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}$.
+ considerando prodInv como la productoria del invariante: $\prod\limits_{j=0}^{i-1} \IfThenElse{eventos[j]}{apuesta.c * pago.c}{apuesta.s * pago.s}$.
  Luego la expresión $(I \land B) \land V0 = fv \implica wp(S,fv < V0)$ queda como:
 
 \begin{equation}
@@ -550,7 +560,8 @@
 
 \vspace{0.3cm}
 
- Luego se concluye que la tripla de Hoare {(I \land B) \land V0 = fv}S{fv $<$ V0} es válida.
+ Luego se concluye que la tripla de Hoare ((I \land B) \land V0 = fv)S(fv < V0) es válida, lo que implica
+ que la función variante fv es decreciente.
 
 \subsection{I \land fv $\leq$ 0 \implica \neg B}
 
