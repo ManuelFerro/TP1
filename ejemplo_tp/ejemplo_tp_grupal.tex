@@ -22,12 +22,35 @@
 % No es obligatorio, pero suele ser comodo
 \graphicspath{{../static/}}
 
+\setcounter{section}{-1}
+
 \begin{document}
 
 \maketitle
 
- (Aclaración) La extrañeza del nombre del grupo se debe a que
- este fue generado con la herramienta de generación aleatoria de nombres proveida en el campus de la materia.
+\section{Aclaraciones generales}
+ La extrañeza del nombre del grupo se debe a que
+ este fue generado con la herramienta de generación aleatoria de nombres proveida en el campus
+ de la materia.
+
+\begin{itemize}
+	\item Los índices de las listas recursos, cooperan, trayectorias, apuestas, pagos, eventos representa el identificador de los
+    individuos.
+	\item recursos: seq⟨\real⟩ es la lista con el recurso de cada individuo.
+	\item cooperan: seq⟨Bool⟩ es la lista que indica T rue si el individuo en dicha posición coopera.
+	\item trayectorias: seq⟨seq⟨\real⟩⟩ indica para cada individuo, en cada paso de tiempos, cuántos recursos (\real) cuenta.
+	\item eventos: seq⟨seq⟨\nat⟩⟩ indica para cada individuo, en cada paso temporal, qué evento le ha tocado.
+	\item apuestas: seq⟨seq⟨\real⟩⟩ indica para cada individuo, para cada evento posible (numerados desde 0), cuánto apostará.
+	\item pagos: seq⟨seq⟨\real⟩⟩ indica para cada individuo, para cada evento, cuánto se pagará. Notar que a diferencia del ejemplo, estams resolviendo un caso más general donde el pago de cada evento puede diferir por individuo.
+	\item Las personas que no \textit{cooperan} no aportan nada al fondo monetario común.
+	\item Los \textit{recursos} iniciales son positivos.
+	\item Todos los \textit{pagos} son positivos.
+	\item Las \textit{apuestas} de los individuos representan la proporción de los recursos que los individuos invierten a cada una de los eventos posibles. Notar nuevamente que a diferencia del ejemplo, en este caso más general, podríamos tener apuestas distintas para cada evento por cada individuo.
+	\item Cada individuo apuesta siempre el mismo porcentaje por cada evento posible (es decir, el mismo número en cada paso temporal). Por ejemplo, si tenemos dos eventos; cara y ceca y apuesta 0, 4 por cara y 0,6 por seca, en cada paso temporal apostará esas proporciones.
+    
+\end{itemize}
+
+\clearpage 
 
 \section{Especificación}
 
@@ -151,60 +174,64 @@
 
 \begin{proc}{individuoDecideSiCooperarONo:}{\In individuo : \nat, \In recursos : \TLista{\ent} ,\Inout cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}
 
-	\requiere{
-		(\longitud[recursos]=\longitud[cooperan]=\longitud[apuestas]=\longitud[pagos]=\longitud[eventos]) \yLuego (0 $leq$ individuo $<$ \longitud[cooperan]) \yLuego 
-		((\paraTodo[unalinea]{i,j,k,l,m}{\ent}){((0 $\leq$ i $<$ \longitud[recursos] \implicaLuego recursos[i] $>$ 0) \yLuego (0 $\leq$ j,m $<$ \longitud[pagos] \implicaLuego pagos[j][m] $>$ 0) \yLuego (0 $\leq$ k,l $<$ \longitud[apuestas] \implicaLuego apuestas[k][l] $>$ 0))}) %ver como printea el () después del paratodo
-		}
-	\asegura{
-		(evaluarRecursosIndividuo(individuo, apuestas, pagos, recursos, eventos) \yLuego ((\ifthenelse{(\exists i \in)}{evaluarDesertores(recursos, cooperan, apuestas, pagos, eventos)}{\skip}) \yLuego \ifthenelse{test}{evaluarCooperadores(recursos, cooperan, apuestas, pagos, eventos)}{\skip}) \implicaLuego evaluarCooperacion(individuo, recursos, cooperan, apuestas, pagos, eventos)) %preguntar la estructura el existe
-		}
-
-	\aux{evaluarRecursosIndividuo:}{\In individuo : \nat, \In recursos : \TLista{\ent} , \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}{\float}
+	\requiere{ (\longitud{recursos}=\longitud{cooperan}=\longitud{apuestas}=\longitud{pagos}=\longitud{eventos})\\}\\
 		\requiere{
-		(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego (\longitud[pagos[i]]==\longitud[apuestas[i]])})
+		(0 $\leq$ individuo $<$ \longitud{cooperan})
+        \\}
+        \requiere {
+		{apuesta}={Apuesta_{0}}\\
 		}
-		\asegura{\paraTodo[unalinea]{j}{\ent}{((0 $\leq$ j $<$ \longitud[eventos[individuo]]) \implicaLuego (res = recursos[individuo] + apuestas[individuo][eventos[individuo][j]] * pagos[individuo][eventos[individuo][j]] - apuestas[individuo][eventos[individuo][j]]))} %¿res?
-		}
-	
+        \requiere{
+		(\paraTodo[unalinea]{i,j,k,l,m}{\ent}{((0 $\leq$ i $<$ \longitud{recursos} \implicaLuego recursos[i] > 0) \yLuego
+		(0 $\leq$ j,m $<$ \longitud{pagos} \implicaLuego pagos[j][m] > 0) \yLuego (0 $\leq$ k,l $<$ \longitud{apuestas} \implicaLuego apuestas[k][l] > 0))})\\}
+        \\
 
-	\aux{evaluarDesertores:}{\In recursos : \TLista{\float} ,\In cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}{\float} 
-		\requiere{True}
+\vspace{0.3cm}
 
-		\asegura{
-			(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego cooperan[i]=False} \implicaLuego evaluarRecursosDesertores(i) \and  ((\sum\limits_{i=0}^{\longitud[recursos] - 1}[recursos][i])/(\sum\limits_{i=0}^{\longitud[cooperan] - 1}(\ifthenelse{cooperan[i]=False}{1}{0}))))
-		}
-		
-		\aux{evaluarRecursosDesertores}{\Inout recursos : \TLista{\ent} ,\In cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}
-			\requiere{
-				(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego (\longitud[pagos[i]]==\longitud[apuestas[i]])})
-			}
+	\asegura{
+        (\exists ind :seq⟨seq⟨\float⟩⟩)(esApuestaVariante(ind, individuo)) \yLuego\\ (\exists trayectoriaInd:seq⟨seq⟨\real⟩⟩)(esTrayectoria(trayectoriaInd, recursos, eventos, pagos, cooperan, ind)) \yLuego  \\\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud{cooperan} \yLuego \paraTodo[unalinea]{A}{\TLista{\TLista{\float}}}{esApuestaVariante(A, i) \yLuego\\ (\forall trayectoriaI : \TLista{\TLista{\float}})(esTrayectoria(trayectoriaI, recursos, eventos, pagos, cooperan,A))}} \implicaLuego\\
+		((\IfThenElse{(\exists i : \ent)(0 $\leq$ i $<$ \longitud{cooperan} \wedge cooperan[i] = False)\\}{evaluarDesertores(trayectoriaI, cooperan, apuestas, pagos, eventos)}{0}) \yLuego\\ \IfThenElse{(\exists i : \ent)(0 $\leq$ i $<$ \longitud{cooperan} \wedge cooperan[i] = False)\\}{evaluarCooperadores(trayectoriaI, cooperan, apuestas, pagos, eventos)}{0}) \implicaLuego\\ evaluarCooperacion(individuo, recursos, cooperan, apuestas, pagos, eventos))\\
+		}\\
 
-				\asegura{
-					(\paraTodo[unalinea]{i,j}{\ent}{(((0 $\leq$ i $<$ \longitud[cooperan] \yLuego cooperan[i]=False)\yLuego (0 $\leq$ j $<$ \longitud[eventos[i]])) \implicaLuego (recursos[i]= recursos[i] - apuestas[i][eventos[i][j]] + apuestas[i][eventos[i][j]]*pagos[i][eventos[i][j]]))})
-				}
+\vspace{0.3cm}
 
-	\aux{evaluarCooperadores:}{\In recursos : \TLista{\float} ,\In cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}{\float} 
-		\requiere{True}
+        \aux{evaluarDesertores}{trayectoriaI, cooperan, apuestas, pagos, eventos}{\float}
+            {\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud{copeeran}  \implicaLuego\\ \frac{(\sum\limits_{i=0}^{\longitud{cooperan} - 1}){(\IfThenElse{cooperan[i] = False}{trayectoriaI[i][\longitud{trayectoriaI} - 1]}{0})}}{(\sum\limits_{i=0}^{\longitud{cooperan} - 1}) (\IfThenElse{cooperan[i]=False}{1}{0})}}}
 
-		\asegura{
-			(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego cooperan[i]=True} \implicaLuego evaluarRecursosCooperadores(i) \and  ((\sum\limits_{i=0}^{\longitud[recursos] - 1}[recursos][i])/(\sum\limits_{i=0}^{\longitud[cooperan] - 1}(\ifthenelse{cooperan[i]=True}{1}{0}))))
-		}
-		
-		\aux{evaluarRecursosCooperadores}{\Inout recursos : \TLista{\ent} ,\In cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}} %Recursos pasaría a ser una lista de float. Tengo/puedo cambiarlo en la especificación?
-			\requiere{
-				(\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud[recursos] \yLuego (\longitud[pagos[i]]==\longitud[apuestas[i]])})
-			}
+\vspace{0.3cm}
 
-			\asegura{
-				(\paraTodo[unalinea]{i,j}{\ent}{(((0 $\leq$ i $<$ \longitud[cooperan] \yLuego cooperan[i]=True)\yLuego (0 $\leq$ j $<$ \longitud[eventos[i]])) \implicaLuego (recursos[i]= recursos[i] - apuestas[i][eventos[i][j]] + apuestas[i][eventos[i][j]]*pagos[i][eventos[i][j]]))})
-			}
-		
-	\aux{evaluarCooperación}{\In individuo : \nat, \In recursos : \TLista{\ent} ,\Inout cooperan : \TLista{\bool}, \In apuestas : \TLista{\TLista{\ent}}, \In pagos : \TLista{\TLista{\ent}}, \In eventos : \TLista{\TLista{\ent}}}
-		\requiere{True}
+		\aux{evaluarCooperadores}{trayectoriaI, cooperan, apuestas, pagos, eventos}{\float}
+            {\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud{copeeran}  \implicaLuego\\ \frac{(\sum\limits_{i=0}^{\longitud{cooperan} - 1}){(\IfThenElse{cooperan[i] = True}{trayectoriaI[i][\longitud{trayectoriaI} - 1]}{0})}}{(\sum\limits_{i=0}^{\longitud{cooperan} - 1}) (\IfThenElse{cooperan[i]=True}{1}{0})}}}
+            
+\vspace{0.3cm}
 
-			\asegura{
-				(((evaluarRecursosIndividuo $\leq$ evaluarDesertores \y evaluarDesertores $>$ evaluarCooperadores)\implicaLuego (cooperan[individuo]= False)) \oLuego ((evaluarRecursosIndividuo $\leq$ evaluarCooperadores \y evaluarCooperadores $>$ evaluarDesertores) \implicaLuego (cooperan[individuo]=True)) \oLuego ((evaluarDesertores == evaluarRecursosCooperadores) \implicaLuego cooperan[individuo] = cooperan[individuo]))
-			}
+        \pred{evaluarCooperacion}{individuo ,recursos ,cooperan ,apuestas   ,pagos ,eventos}{
+            (((trayectoriaInd[individuo][\longitud{tryectoria} -1] $\leq$ evaluarDesertores \wedge evaluarDesertores $>$ evaluarCooperadores)\implicaLuego
+            (cooperan[individuo]= False)) \oLuego\\ 
+            ((trayectoriaInd[individuo][\longitud{tryectoria} -1] $\leq$ evaluarCooperadores \wedge evaluarCooperadores > evaluarDesertores) \implicaLuego
+            (cooperan[individuo]=True)) \oLuego ((evaluarDesertores = evaluarRecursosCooperadores) \implicaLuego\\ cooperan[individuo] = cooperan[individuo]))\\
+        }
+        
+\vspace{0.3cm}
+
+        \pred{todoPositivo}{recursos, apuestas, pagos}
+	{\paraTodo[unalinea]{i,j}{\ent}{
+		(0 $\leq$ i $<$ \longitud{apuestas} \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego\\
+		(apuestas[i][j] > 0 \yLuego pagos[i][j] > 0 \yLuego recursos[i] > 0)}\\
+	}
+ 
+\vspace{0.3cm}
+
+	\pred{esTrayectoria}{trayectoria, eventos, individuo, pagos, apuestas,        recursos, cooperan}{\\
+		(trayectorias[individuo][0] = recursos[individuo]) \yLuego (\longitud{trayectorias} = \longitud{eventos} + 1) \yLuego\\ PagoPozoCorrecto (trayectorias , cooperan)
+	}
+
+\vspace{0.3cm}
+        
+	\pred{apuestaValida}{A : \TLista{\TLista{\float}}, individuo}{
+		(\longitud{A} = \longitud{{Apuesta_{0}}}) \wedge\\ (\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud{{Apuesta_{0}}} \wedge i \neq individuo \implicaLuego A[i] = {Apuesta_{0}}[i]}) \wedge 
+		\longitud{A[individuo]} = \longitud{{Apuesta_{0}}[0]} \wedge\\ (\paraTodo[unalinea]{j}{\ent}{0 $\leq$ j $<$ \longitud{A[individuo]} \implicaLuego 0 $\leq$ A[individuo[j]] $\leq$ 1})\\
+	}
 
 \end{proc}
 
@@ -214,47 +241,46 @@
 	{\In individuo: \nat, \In recursos: \TLista{\float}, \In cooperan: \TLista{\bool}, \Inout apuestas: \TLista{\TLista{\float}},
 	 \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\nat}}}
 
-	\requiere{
-		\longitud[recursos] = \longitud[cooperan] = \longitud[apuestas] = \longitud[pagos] = \longitud[eventos] \yLuego
+	 \requiere{
+		\longitud{recursos} = \longitud{cooperan} = \longitud{apuestas} = \longitud{pagos} = \longitud{eventos}\\ 
+	}
+	\requiere {
+		mismoGrupoDeEventos(apuestas, pagos)\\
+	}
+	\requiere {
+		todoPositivo(recursos, apuestas, pagos)\\
+	}
+	\requiere {
+		todoElRecursoFueApostado(apuestas)\\
+	} 	
+	\requiere {
+		{apuesta}={Apuesta_{0}}\\
+	}
+	\requiere {
+		0 $\leq$ individuo $<$ \longitud{apuestas}\\
+	}
 
-		mismoGrupoDeEventos(apuestas, pagos) \yLuego
 
-		todoPositivo(recursos, apuestas, pagos) \yLuego
-
-		todoElRecursoFueApostado(apuestas) \yLuego	
-
-		0 $\leq$ individuo $<$ \longitud[apuestas]}
-		
-	\asegura{%¿habrá que chequear que solo cambió apuestas[individuo]? ¿cómo se haría eso?
-
-		\longitud[apuestas] = \longitud[pagos] \yLuego %chequeo que la lista de apuestas conserve la longitud
-
-		%la longitud podría chequearse con pagos, eventos, cooperan o recursos,
-		%¿es correcto exigir que se chequee con pagos? sino,
-		%¿habría que hacer un auxiliar para que se permita chequear la longitud con cualquiera? preguntar
-		
-		mismoGrupoDeEventos(apuestas, pagos) \yLuego %chequeo que todas las apuestas (en particular apuestas[individuo]) conserven la longitud
-
-		todoPositivo(recursos, apuestas, pagos) \yLuego %reciclo el pred ya definido, pero este chequea la condición también en recursos y pagos,
-														%¿es correcto? ¿o deberìa chequearse sólo apuestas?
-		
-		todoElRecursoFueApostado(apuestas) \yLuego %chequeo que todas las apuestas (en particular apuestas[individuo]) sigan sumando 1
-		 
-		RecursosFinales(individuo, recursos, apuestas, pagos, eventos) $\geq$ RecursosFinales(individuo, recursos, apuestas, pagos, eventos)
-		%la idea es chequear que los recursos finales individuales que las nuevas apuestas generan sean "los máximos"
-		%¿Cómo hacerlo?
-		
-		}%se supone que apuestas ya está modificado, sino es así preguntar cómo se indica eso
+	\asegura{\\
+		(\exists B :\TLista{\TLista{\float}})(apuestaValida(B,{individuo}) \yLuego\\ (\exists {trayectoriaB}:\TLista{\TLista{\float}})(esTrayectoria(trayectoriaB ,recursos ,eventos ,pagos ,cooperan ,B)) \yLuego  \\
+		\paraTodo[unalinea]{A}{\ent}{apuestaValida(A, individuo) \implicaLuego\\ \paraTodo[unalinea]{trayectoria}{\TLista{\TLista{\float}}}{ esTrayectoria(trayectoria ,recursos ,eventos ,pagos ,cooperan, A) \implicaLuego\\
+		trayectoriaB[individuo][\longitud{trayectoriaB[individuo]} - 1] $\geq$ trayectoria[individuo][\longitud{trayectoria[individuo]} - 1]}})\\
+		}
 
 	\pred{todoPositivo}{recursos, apuestas, pagos}
 	{\paraTodo[unalinea]{i,j}{\ent}{
-		(0 $\leq$ i $<$ \longitud[apuestas] \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego
-		(apuestas[i][j] $>$ 0 \yLuego pagos[i][j] $>$ 0 \yLuego recursos[i] $>$ 0)}
+		(0 $\leq$ i $<$ \longitud{apuestas} \yLuego 0 $\leq$ j $<$ apuestas[i]) \implicaLuego\\
+		(apuestas[i][j] > 0 \yLuego pagos[i][j] > 0 \yLuego recursos[i] > 0)}\\
 	}
 
-	\aux{RecursosFinales}{individuo, recursos, apuestas, pagos, eventos}{\float}
-	{recursos[individuo]*(\prod_{n=0}^{\longitud[eventos[individuo]] - 1} [pagos][individuo][eventos[individuo][n]]*[apuestas][individuo][eventos[individuo][n]])}
-	%una productoria que calcula todo el proceso multiplicativo
+	\pred{esTrayectoria}{trayectoria, eventos, individuo, pagos, apuestas, recursos, cooperan}{\\
+		(trayectorias[individuo][0] = recursos[individuo]) \yLuego (\longitud{trayectorias} = \longitud{eventos} + 1) \yLuego\\ PagoPozoCorrecto (trayectorias , cooperan)
+	}
+        
+	\pred{apuestaValida}{A : \TLista{\TLista{\float}}, individuo}{\\
+		(\longitud{A} = \longitud{{Apuesta_{0}}}) \wedge\\ (\paraTodo[unalinea]{i}{\ent}{0 $\leq$ i $<$ \longitud{{Apuesta_{0}}} \wedge i \neq individuo \implicaLuego A[i] = {Apuesta_{0}}[i]}) \wedge 
+		\longitud{A[individuo]} = \longitud{{Apuesta_{0}}[0]} \wedge\\ (\paraTodo[unalinea]{j}{\ent}{0 $\leq$ j $<$ \longitud{A[individuo]} \implicaLuego 0 $\leq$ A[individuo[j]] $\leq$ 1})\\
+	}
 
 \end{proc}
 
