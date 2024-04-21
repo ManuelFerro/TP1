@@ -40,15 +40,13 @@
 	{\In recursos : \TLista{\ent}\nat, \In cooperan : \TLista{\bool}}{\TLista{\ent}}
 
 	\requiere{
-		\longitud[recursos] = \longitud[cooperan] \yLuego
-
-		todoPositivo[recursos]
+		\longitud{recursos} = \longitud{cooperan} \yLuego todoPositivo(recursos)
 	}
 	\asegura{
-		reparticiones[recursos, cooperan] \yLuego
-
-		todoIgualSiCooperan[recursos, cooperan]
+		reparticiones(recursos, cooperan) \yLuego todoIgualSiCooperan(recursos, cooperan)
 	}
+
+\vspace{0.3cm}
 
 	\pred{todoPositivo}{recursos}
 	{\paraTodo[unalinea]{i}{\ent}{
